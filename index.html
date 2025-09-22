@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Buzz</title>
+    <style>
+        :root {
+            --primary-red: #E50914; --dark-red: #B20710; --background-color: #141414;
+            --text-color: #ffffff; --card-background: #222222;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--background-color); color: var(--text-color); }
+        .page { display: none; }
+        .page.active { display: block; }
+        #main-header, #secondary-header { padding: 15px 20px; }
+        #secondary-header { display: none; }
+        .header-content { display: flex; align-items: center; justify-content: space-between; }
+        .logo-group { display: flex; align-items: center; }
+        .logo-placeholder { width: 35px; height: 35px; border-radius: 6px; margin-right: 15px; background-image: url('https://i.postimg.cc/gjS2LNtp/d036b4adf7918cd38c1b8f06523b7580.jpg'); background-size: cover; background-position: center; }
+        .website-name { font-size: 26px; font-weight: 900; }
+        .website-name span { color: var(--primary-red); }
+        .save-icon { width: 30px; height: 30px; cursor: pointer; }
+        .save-icon path { fill: none; stroke: var(--text-color); stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; }
+        .save-icon.saved path { fill: var(--primary-red); stroke: var(--primary-red); }
+        .back-btn { display: inline-block; color: var(--text-color); text-decoration: none; font-size: 18px; padding: 20px; }
+        .back-btn:before { content: '‹ '; font-size: 24px; }
+        .slider-container { position: relative; width: 100%; aspect-ratio: 1365 / 768; max-height: 768px; margin-bottom: 25px; overflow: hidden; background-color: #000; }
+        .hero-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 1s ease-in-out; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding: 30px; }
+        .hero-slide::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(20, 20, 20, 0.9), transparent); }
+        .hero-title { z-index: 2; font-size: 22px; font-weight: bold; text-shadow: 2px 2px 4px #000; }
+        .watch-now-btn { z-index: 2; margin-top: 15px; padding: 10px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+        .watch-now-btn:hover { background-color: var(--dark-red); }
+        .anime-row { margin-bottom: 30px; }
+        .anime-row h2 { font-size: 20px; margin-bottom: 15px; padding: 0 20px; }
+        .row-content { display: flex; overflow-x: auto; gap: 12px; padding: 0 20px 10px 20px; scrollbar-width: none; min-height: 200px; }
+        .row-content::-webkit-scrollbar { display: none; }
+        .anime-card { flex-shrink: 0; width: 120px; cursor: pointer; }
+        .anime-card img { width: 100%; height: 170px; object-fit: cover; border-radius: 8px; transition: transform 0.3s; background-color: #333; }
+        .anime-card p { margin-top: 8px; font-size: 14px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .anime-card:hover img { transform: scale(1.05); }
+
+        /* --- Search Page (UPDATED DESIGN) --- */
+        #search-page .search-bar-container { padding: 20px; }
+        .search-input-wrapper { position: relative; max-width: 700px; margin: 0 auto 20px auto; }
+        .search-input {
+            width: 100%;
+            padding: 15px 60px 15px 25px; /* आइकॉन के लिए जगह */
+            background-color: #2c2c2c;
+            border: 2px solid var(--primary-red);
+            border-radius: 50px; /* पूरी तरह गोल */
+            color: var(--text-color);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .search-input::placeholder { color: rgba(255, 255, 255, 0.7); }
+        .search-input:focus { outline: none; box-shadow: 0 0 10px rgba(229, 9, 20, 0.5); }
+        .search-icon {
+            position: absolute; right: 20px; top: 50%;
+            transform: translateY(-50%); width: 24px; height: 24px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #saved-items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; padding: 20px; }
+        #no-saved-items { text-align: center; padding: 50px 20px; color: #888; }
+        .details-container { padding: 0 20px 20px 20px; }
+        .details-poster { width: 100%; max-width: 300px; border-radius: 10px; margin: 0 auto; display: block; }
+        .details-info { margin-top: 20px; }
+        .details-info h1 { font-size: 28px; }
+        .details-info p { margin-top: 10px; color: #ccc; line-height: 1.5; }
+        .quality-buttons { margin-top: 25px; display: flex; flex-wrap: wrap; gap: 15px; }
+        .quality-btn { padding: 12px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        .episodes-container { padding: 0 20px 20px 20px; }
+        .season-block { margin-bottom: 30px; }
+        .season-block h3 { font-size: 18px; color: #ccc; margin-bottom: 20px; }
+        .episode-buttons-container { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 15px; scrollbar-width: none; }
+        .episode-buttons-container::-webkit-scrollbar { display: none; }
+        .episode-btn { flex-shrink: 0; padding: 10px 20px; background-color: #333; color: var(--text-color); border: 1px solid #555; border-radius: 5px; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #181818; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #333; z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e8e; text-decoration: none; font-size: 12px; transition: color 0.3s; cursor: pointer; }
+        .nav-item.active { color: var(--text-color); }
+        .nav-icon { width: 26px; height: 26px; margin-bottom: 3px; }
+        .nav-icon path { fill: currentColor; }
+        @media (min-width: 768px) {
+            .page { max-width: 1200px; margin: 0 auto; padding-bottom: 20px; }
+            .anime-card { width: 160px; }
+            .anime-card img { height: 230px; }
+            .bottom-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <div class="logo-placeholder"></div>
+                <h1 class="website-name"><span>Anime</span>Buzz</h1>
+            </div>
+        </div>
+    </header>
+    <header id="secondary-header">
+        <div class="header-content"><h1 class="website-name" id="page-title"></h1></div>
+    </header>
+
+    <div id="home-page" class="page active">
+        <main>
+            <section id="anime-banner-container" class="slider-container"></section>
+            <section class="anime-row"><h2>Trending Anime 🔥</h2><div id="anime-list-container" class="row-content"></div></section>
+        </main>
+    </div>
+    
+    <div id="search-page" class="page">
+        <div class="search-bar-container">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search..." onkeyup="handleSearch()">
+                <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+            </div>
+        </div>
+        <section id="search-results-container" class="anime-row" style="display: none;">
+            <h2>Search Results</h2>
+            <div class="row-content"></div>
+        </section>
+        <section class="anime-row">
+            <h2>Suggestions</h2>
+            <div id="suggestions-list-container" class="row-content"></div>
+        </section>
+    </div>
+
+    <div id="saved-page" class="page">
+        <div id="saved-items-grid"></div>
+        <div id="no-saved-items" style="display: none;">
+            <h1>Nothing Saved Yet</h1>
+            <p>Click the save icon on any anime to add it to this list.</p>
+        </div>
+    </div>
+
+    <div id="details-page" class="page">
+        <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
+        <div class="details-container">
+            <img src="" id="details-poster" class="details-poster">
+            <div class="details-info">
+                <h1 id="details-title"></h1>
+                <p id="details-desc"></p>
+            </div>
+            <div class="quality-buttons">
+                <button class="quality-btn" onclick="navigateTo('episodes-page')">480p</button>
+                <button class="quality-btn" onclick="navigateTo('episodes-page')">720p</button>
+                <button class="quality-btn" onclick="navigateTo('episodes-page')">1080p</button>
+                <button class="quality-btn" onclick="navigateTo('episodes-page')">4K</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="episodes-page" class="page">
+        <a href="#" class="back-btn" onclick="event.preventDefault(); navigateTo('details-page')">Back to Details</a>
+        <div id="episodes-container" class="episodes-container"></div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a id="nav-home" class="nav-item active" onclick="navigateTo('home-page')"><svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg><span>Home</span></a>
+        <a id="nav-search" class="nav-item" onclick="navigateTo('search-page')"><svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg><span>Search</span></a>
+        <a id="nav-saved" class="nav-item" onclick="navigateTo('saved-page')"><svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" /></svg><span>Saved</span></a>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyASOG_iJLTolJHK54Z4BpLpAimA4JALURY",
+          authDomain: "animeweb-b9a7b.firebaseapp.com",
+          projectId: "animeweb-b9a7b",
+          storageBucket: "animeweb-b9a7b.firebasestorage.app",
+          messagingSenderId: "920902736319",
+          appId: "1:920902736319:web:b0dff9ec9e298021bf290a"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+        const mainHeader = document.getElementById('main-header');
+        const secondaryHeader = document.getElementById('secondary-header');
+        let pageHistory = ['home-page'];
+        let savedItems = [];
+
+        const pageHeaders = {
+            'home-page': null, 'search-page': 'Search', 'saved-page': 'My List',
+            'details-page': 'Details', 'episodes-page': 'Episodes'
+        };
+
+        function navigateTo(pageId, data = null) {
+            if (pageId !== pageHistory[pageHistory.length - 1]) pageHistory.push(pageId);
+            pages.forEach(p => p.classList.remove('active'));
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) targetPage.classList.add('active');
+            
+            if (pageId === 'details-page' && data) {
+                document.getElementById('details-poster').src = data.imageUrl;
+                document.getElementById('details-title').innerText = data.title;
+                document.getElementById('details-desc').innerText = data.description;
+            }
+
+            const title = pageHeaders[pageId];
+            if (title) {
+                mainHeader.style.display = 'none';
+                secondaryHeader.style.display = 'block';
+                let headerContent = `<h1 class="website-name">${title}</h1>`;
+                if (pageId === 'details-page') {
+                    headerContent = `<h1 class="website-name">${title}</h1><svg class="save-icon" id="details-save-icon" onclick="toggleSave(this, '${data.id}', '${data.title}', '${data.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+                }
+                secondaryHeader.querySelector('.header-content').innerHTML = headerContent;
+            } else {
+                mainHeader.style.display = 'block';
+                secondaryHeader.style.display = 'none';
+            }
+
+            navItems.forEach(item => item.classList.remove('active'));
+            const baseId = pageId.split('-')[0];
+            const navItem = document.getElementById(`nav-${baseId}`);
+            if (navItem) navItem.classList.add('active');
+            if (pageId === 'saved-page') renderSavedItems();
+            window.scrollTo(0, 0);
+        }
+
+        function navigateBack() { if (pageHistory.length > 1) { pageHistory.pop(); navigateTo(pageHistory[pageHistory.length - 1]); } }
+
+        function toggleSave(icon, id, title, imageUrl) {
+            const isSaved = icon.classList.toggle('saved');
+            const item = { id, title, imageUrl };
+            if (isSaved) {
+                if (!savedItems.some(i => i.id === id)) savedItems.push(item);
+            } else {
+                savedItems = savedItems.filter(i => i.id !== id);
+            }
+        }
+
+        function renderSavedItems() {
+            const grid = document.getElementById('saved-items-grid');
+            const noItemsMsg = document.getElementById('no-saved-items');
+            grid.innerHTML = '';
+            if (savedItems.length === 0) {
+                if (noItemsMsg) noItemsMsg.style.display = 'block';
+            } else {
+                if (noItemsMsg) noItemsMsg.style.display = 'none';
+                savedItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'anime-card';
+                    card.onclick = () => navigateTo('details-page', item);
+                    card.innerHTML = `<img src="${item.imageUrl}"><p>${item.title}</p>`;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        function handleSearch() {
+            const input = document.getElementById('searchInput');
+            const results = document.getElementById('search-results-container');
+            if (results) results.style.display = input.value.trim().length > 0 ? 'block' : 'none';
+        }
+
+        async function fetchAndRenderBanners(collectionName, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<p style="padding:20px; color:#555;">Loading banners...</p>`;
+            try {
+                const snapshot = await db.collection(collectionName).get();
+                if (snapshot.empty) { container.innerHTML = `<p style="padding:20px; color:#555;">No banners found.</p>`; return; }
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    html += `<div class="hero-slide" style="background-image: url('${data.imageUrl}');" onclick='navigateTo("details-page", ${JSON.stringify(data)})'><div class="hero-title"><h3>${data.title}</h3></div><button class="watch-now-btn" onclick='event.stopPropagation(); navigateTo("details-page", ${JSON.stringify(data)})'>Watch Now</button></div>`;
+                });
+                container.innerHTML = html;
+                initSlider(containerId);
+            } catch (err) { container.innerHTML = `<p style="padding:20px; color:var(--primary-red);">Error loading banners.</p>`; }
+        }
+
+        async function fetchAndRenderCards(collectionName, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<p style="padding:20px; color:#555;">Loading content...</p>`;
+            try {
+                const snapshot = await db.collection(collectionName).get();
+                if (snapshot.empty) { container.innerHTML = `<p style="padding:20px; color:#555;">No items found.</p>`; return; }
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    html += `<div class="anime-card" onclick='navigateTo("details-page", ${JSON.stringify(data)})'><img src="${data.imageUrl}" alt="${data.title}"><p>${data.title}</p></div>`;
+                });
+                container.innerHTML = html;
+            } catch (err) { container.innerHTML = `<p style="padding:20px; color:var(--primary-red);">Error loading content.</p>`; }
+        }
+        
+        function initSlider(containerId) {
+            const slider = document.getElementById(containerId);
+            const slides = slider.querySelectorAll('.hero-slide');
+            let current = 0;
+            if (slides.length > 0) {
+                slides.forEach((s, i) => s.style.transform = `translateX(${i * 100}%)`);
+                setInterval(() => {
+                    current = (current + 1) % slides.length;
+                    slides.forEach((s, i) => s.style.transform = `translateX(${(i - current) * 100}%)`);
+                }, 5000);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderBanners('animeBanners', 'anime-banner-container');
+            fetchAndRenderCards('anime', 'anime-list-container');
+        });
+    </script>
+</body>
+</html>
