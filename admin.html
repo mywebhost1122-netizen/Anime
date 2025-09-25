@@ -6,10 +6,7 @@
     <title>Anime Buzz - एडमिन पैनल</title>
     <style>
         :root { --primary: #E50914; --secondary: #222; --background: #141414; --text-primary: #fff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; 
-            /* --- क्लिक इफ़ेक्ट हटाने के लिए यह लाइन जोड़ी गई है --- */
-            -webkit-tap-highlight-color: transparent; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--background); color: var(--text-primary); }
         .view { display: none; padding: 20px; padding-bottom: 100px; }
         .view.active { display: block; }
@@ -21,14 +18,9 @@
         .list-section { background-color: var(--secondary); padding: 20px; border-radius: 8px; }
         .list-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 4px; }
         .list-item:nth-child(even) { background-color: #2a2a2a; }
-        
         .list-item-actions button { background: none; border: none; color: #aaa; margin-left: 15px; padding: 5px; display: inline-flex; align-items: center; justify-content: center; }
         .list-item-actions button svg { width: 20px; height: 20px; }
         .list-item-actions button:hover { color: var(--primary); }
-
-        .btn-change-text { background-color: #444; color: white; font-size: 14px; padding: 5px 10px; border-radius: 4px; }
-        .list-item-details { display: flex; flex-direction: column; }
-        .list-item-details .current-btn-text { font-size: 12px; color: #ccc; margin-top: 4px; }
         #form-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--background); z-index: 1500; overflow-y: auto; display: none; }
         #form-view .form-container { padding: 20px; padding-bottom: 80px; }
         #form-view .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -44,25 +36,11 @@
         .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
         .form-group input, .form-group textarea { width: 100%; padding: 12px; border-radius: 4px; border: 1px solid #444; background-color: #333; color: var(--text-primary); font-size: 16px; }
         .form-group textarea { resize: vertical; min-height: 100px; }
-        
-        /* --- बॉटम बार और आइकॉन के लिए नए स्टाइल --- */
-        .bottom-action-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--secondary); display: flex; justify-content: space-between; align-items: center; height: 60px; padding: 0 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.5); z-index: 500; }
-        .nav-group { display: flex; justify-content: space-around; align-items: center; width: 40%; }
-        .bar-icon { background: none; border: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 12px; gap: 4px; flex-grow: 1; height: 100%; justify-content: center; }
+        .bottom-action-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--secondary); display: flex; justify-content: space-around; align-items: center; height: 60px; box-shadow: 0 -2px 10px rgba(0,0,0,0.5); z-index: 500; }
+        .bar-icon { background: none; border: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 12px; gap: 4px; width: 40%; height: 100%; justify-content: center; }
         .bar-icon.active { color: var(--primary); }
         .bar-icon svg { width: 24px; height: 24px; }
-
-        .fab { 
-            width: 56px; height: 56px; border-radius: 50%; background-color: var(--primary); color: white; font-size: 28px; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.4); 
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 501;
-        }
-        
+        .fab { width: 56px; height: 56px; border-radius: 50%; background-color: var(--primary); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.4); position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 501; }
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 3000; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -71,7 +49,6 @@
 <body>
     <div id="banners-view" class="view active"><div class="container"><header><h1>Banners</h1></header><div class="list-section"><div id="animeBanners-list"></div></div></div></div>
     <div id="anime-view" class="view"><div class="container"><header><h1>Anime</h1></header><div class="list-section"><div id="anime-list"></div></div></div></div>
-    <div id="settings-view" class="view"><div class="container"><header><h1>Button Settings</h1></header><h2 style="margin-bottom: 15px;">Banners</h2><div class="list-section" style="margin-bottom: 30px;"><div id="banner-settings-list"></div></div><h2 style="margin-bottom: 15px;">Anime</h2><div class="list-section"><div id="anime-settings-list"></div></div></div></div>
 
     <div id="form-view">
         <div class="form-container container">
@@ -91,24 +68,15 @@
 
     <div id="add-choice-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2>Add New</h2><button class="close-btn" onclick="hideAddChoice()">×</button></div><div class="choice-buttons"><button class="btn-primary" onclick="openForm('anime')">Add Anime</button><button class="btn-primary" onclick="openForm('animeBanners')">Add Banner</button></div></div></div>
     
-    <!-- --- बदला हुआ बॉटम बार --- -->
     <nav class="bottom-action-bar">
-        <div class="nav-group">
-            <button id="nav-banners" class="bar-icon active" onclick="switchView('banners-view')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                <span>Banners</span>
-            </button>
-            <button id="nav-settings" class="bar-icon" onclick="switchView('settings-view')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                <span>Settings</span>
-            </button>
-        </div>
-        <div class="nav-group">
-            <button id="nav-anime" class="bar-icon" onclick="switchView('anime-view')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
-                <span>Anime</span>
-            </button>
-        </div>
+        <button id="nav-banners" class="bar-icon active" onclick="switchView('banners-view')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <span>Banners</span>
+        </button>
+        <button id="nav-anime" class="bar-icon" onclick="switchView('anime-view')">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+            <span>Anime</span>
+        </button>
     </nav>
     <button class="fab" onclick="showAddChoice()">+</button>
 
@@ -117,7 +85,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script>
-        // --- JAVASCRIPT CODE BINA KISI BADLAV KE WAHI HAI ---
         const firebaseConfig = {
           apiKey: "AIzaSyASOG_iJLTolJHK54Z4BpLpAimA4JALURY",
           authDomain: "animeweb-b9a7b.firebaseapp.com",
@@ -138,7 +105,10 @@
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             document.querySelectorAll('.bar-icon').forEach(i => i.classList.remove('active'));
-            document.getElementById(`nav-${viewId.split('-')[0]}`).classList.add('active');
+            const navId = `nav-${viewId.split('-')[0]}`;
+            if(document.getElementById(navId)) {
+                document.getElementById(navId).classList.add('active');
+            }
         }
 
         async function openForm(collection, mode = 'add', docId = null) {
@@ -192,7 +162,7 @@
                 if (docId) { await db.collection(collection).doc(docId).set(data, { merge: true }); }
                 else { await db.collection(collection).add(data); }
                 closeForm();
-                fetchAllData();
+                fetchCollectionData(collection);
             } catch (err) { alert(err.message); }
             finally { loader.style.display = 'none'; }
         });
@@ -200,7 +170,7 @@
         function closeForm() { document.getElementById('form-view').style.display = 'none'; switchView(lastActiveView); }
         function showAddChoice() { document.getElementById('add-choice-modal').classList.add('active'); }
         function hideAddChoice() { document.getElementById('add-choice-modal').classList.remove('active'); }
-        
+
         async function fetchCollectionData(collectionName) { 
             const listEl = document.getElementById(`${collectionName}-list`); 
             try { 
@@ -215,9 +185,6 @@
                                         <button title="Edit" onclick="openForm('${collectionName}','edit','${doc.id}')">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                         </button>
-                                        <button title="Delete" onclick="deleteDoc('${collectionName}','${doc.id}','${d.title}')">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                        </button>
                                     </div>
                                  </div>`; 
                     }); 
@@ -230,59 +197,9 @@
             } 
         }
 
-        async function deleteDoc(collection, docId, title) { if (confirm(`Delete "${title}"?`)) { await db.collection(collection).doc(docId).delete(); fetchAllData(); } }
-        
-        async function fetchSettingsData(collectionName) {
-            const listElId = collectionName === 'animeBanners' ? 'banner-settings-list' : 'anime-settings-list';
-            const listEl = document.getElementById(listElId);
-            try {
-                const snapshot = await db.collection(collectionName).orderBy("title").get();
-                let html = '';
-                if (!snapshot.empty) {
-                    snapshot.forEach(doc => {
-                        const d = doc.data();
-                        const currentButtonText = d.buttonText || 'Watch Now';
-                        html += `<div class="list-item">
-                                    <div class="list-item-details">
-                                        <span>${d.title}</span>
-                                        <span class="current-btn-text">Button: ${currentButtonText}</span>
-                                    </div>
-                                    <button class="btn-change-text" onclick="changeButtonText('${collectionName}','${doc.id}','${d.title}','${currentButtonText}')">Change</button>
-                                 </div>`;
-                    });
-                } else {
-                    html = `<p>No data found.</p>`;
-                }
-                listEl.innerHTML = html;
-            } catch (e) {
-                console.error("Error loading settings:", e);
-                listEl.innerHTML = `<p>Error loading settings data.</p>`;
-            }
-        }
-
-        async function changeButtonText(collection, docId, title, currentText) {
-            const newText = prompt(`Enter new button text for "${title}":`, currentText);
-            
-            if (newText && newText.trim() !== '') {
-                loader.style.display = 'flex';
-                try {
-                    await db.collection(collection).doc(docId).update({
-                        buttonText: newText
-                    });
-                    fetchSettingsData(collection);
-                } catch (err) {
-                    alert('Error updating button text: ' + err.message);
-                } finally {
-                    loader.style.display = 'none';
-                }
-            }
-        }
-        
         function fetchAllData() { 
             fetchCollectionData('animeBanners'); 
             fetchCollectionData('anime'); 
-            fetchSettingsData('animeBanners');
-            fetchSettingsData('anime');
         }
         
         fetchAllData();
