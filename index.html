@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Anime Buzz</title>
     <style>
         :root { --primary-red: #E50914; --background-color: #141414; --text-color: #ffffff; }
@@ -21,9 +21,13 @@
         .save-icon.saved path { fill: var(--primary-red); stroke: var(--primary-red); }
         .back-btn { display: inline-block; color: var(--text-color); text-decoration: none; font-size: 18px; padding: 20px 20px 0 20px; }
         .back-btn:before { content: '‹ '; font-size: 24px; }
+        
+        /* --- स्लाइडर के लिए नए स्टाइल --- */
         .slider-container { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 768px; margin-bottom: 25px; overflow: hidden; background-color: #000; }
-        .hero-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 1s ease-in-out; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding: 30px; cursor: pointer; }
+        .slider-track { position: relative; height: 100%; display: flex; }
+        .hero-slide { position: relative; width: 100%; height: 100%; flex-shrink: 0; background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding: 30px; cursor: grab; }
         .hero-slide::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(20, 20, 20, 0.9), transparent); }
+
         .hero-title { z-index: 2; font-size: 22px; font-weight: bold; text-shadow: 2px 2px 4px #000; text-align: left; }
         .watch-now-btn { z-index: 2; margin-top: 15px; padding: 10px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 4px; font-size: 14px; font-weight: bold; display: inline-flex; align-items: center; gap: 25px; cursor: pointer; text-transform: uppercase; }
         .anime-row { margin-bottom: 20px; }
@@ -68,10 +72,10 @@
 <body>
     <header id="main-header"><div class="header-content"><div class="logo-group"><div class="logo-placeholder"></div><h1 class="website-name">Anime<span>Buzz</span></h1></div></div></header>
     <header id="secondary-header"><div class="header-content" id="secondary-header-content"></div></header>
-    <div id="home-page" class="page active"><main><section id="banner-container" class="slider-container"></section><div id="home-rows"></div></main></div>
+    <div id="home-page" class="page active"><main><section id="banner-container" class="slider-container"><div id="slider-track" class="slider-track"></div></section><div id="home-rows"></div></main></div>
     <div id="search-page" class="page"><div class="search-bar-container"><input type="text" id="searchInput" class="search-input" placeholder="Search..." onkeyup="handleSearch()"></div><div id="search-results-wrapper"></div></div>
     <div id="saved-page" class="page"><div id="saved-items-list"></div></div>
-    <div id="details-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a><div class="details-content-wrapper"><div class="details-poster-container"><img src="" id="details-poster" class="details-poster"></div><div class="details-info"><h1 id="details-title"></h1><p id="details-desc"></p></div><div class="action-button-container"><button class="watch-btn" onclick="navigateTo('episodes-page')">Watch Now</button></div></div></div>
+    <div id="details-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a><div class="details-content-wrapper"><div class="details-poster-container"><img src="" id="details-poster" class="details-poster"></div><div class="details-info"><h1 id="details-title"></h1><p id="details-desc"></p></div><div class="action-button-container"><button id="details-watch-btn" class="watch-btn" onclick="navigateTo('episodes-page')">Watch Now</button></div></div></div>
     <div id="episodes-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateTo('details-page')">Back</a><div id="episodes-container"></div></div>
     <nav class="bottom-nav">
         <a id="nav-home" class="nav-item active" onclick="navigateTo('home-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg><span>Home</span></a>
@@ -109,12 +113,11 @@
                 document.getElementById('details-poster').src = data.imageUrl;
                 document.getElementById('details-title').innerText = data.title;
                 document.getElementById('details-desc').innerText = data.description || 'No description available.';
+                document.getElementById('details-watch-btn').innerText = data.buttonText || 'Watch Now';
             }
             if (pageId === 'episodes-page') renderDownloadPage();
             if (pageId === 'saved-page') renderSavedItems();
-            if (pageId === 'search-page' && allData.anime.length > 0) {
-                handleSearch(true);
-            }
+            if (pageId === 'search-page' && allData.anime.length > 0) handleSearch(true);
             updateHeader(pageId);
             window.scrollTo(0, 0);
         }
@@ -123,7 +126,7 @@
             const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : '';
             return `<div class="anime-card" onclick='navigateTo("details-page", ${JSON.stringify(item)})'>
                         <div class="anime-card-poster">
-                            <img src="${item.imageUrl}" alt="${item.title}">
+                            <img loading="lazy" src="${item.imageUrl}" alt="${item.title}">
                             ${langTag}
                         </div>
                         <p>${item.title}</p>
@@ -144,16 +147,21 @@
                 renderHomePage(allData.anime);
             } catch (err) { console.error("Error initializing app:", err); }
         }
-
+        
         function renderBanners(banners) {
-            const container = document.getElementById('banner-container');
-            container.innerHTML = banners.map(banner => 
-                `<div class="hero-slide" style="background-image: url('${banner.imageUrl}');" onclick='navigateTo("details-page", ${JSON.stringify(banner)})'>
-                    <h3 class="hero-title">${banner.title}</h3>
-                    <button class="watch-now-btn" onclick="event.stopPropagation(); navigateTo('details-page', ${JSON.stringify(banner)})"><span>Watch Now</span><span>&gt;</span></button>
-                </div>`
-            ).join('');
-            initSlider('banner-container');
+            const track = document.getElementById('slider-track');
+            if (!track || banners.length === 0) return;
+
+            const slidesHTML = banners.map(banner => {
+                const buttonText = banner.buttonText || 'Watch Now';
+                return `<div class="hero-slide" style="background-image: url('${banner.imageUrl}');" data-details='${JSON.stringify(banner)}'>
+                            <h3 class="hero-title">${banner.title}</h3>
+                            <button class="watch-now-btn"><span>${buttonText}</span><span>&gt;</span></button>
+                        </div>`;
+            }).join('');
+            
+            track.innerHTML = slidesHTML;
+            initSlider();
         }
 
         function renderHomePage(animeList) {
@@ -177,7 +185,7 @@
             return `
                 <div class="search-result-item" onclick='navigateTo("details-page", ${JSON.stringify(item)})'>
                     <div class="search-item-poster">
-                        <img src="${item.imageUrl}" alt="${item.title}">
+                        <img loading="lazy" src="${item.imageUrl}" alt="${item.title}">
                         ${langTag}
                     </div>
                     <div class="search-item-info">
@@ -234,38 +242,118 @@
 
         function openExternalLink(url){if(url&&url.startsWith("https"))window.open(url,"_blank");else alert("Invalid URL.")}
         
-        // === YAHAN SLIDER FUNCTION MEIN BADLAV KIYA GAYA HAI ===
-        function initSlider(containerId) {
-            const container = document.getElementById(containerId);
-            const slides = container.querySelectorAll(".hero-slide");
-            if (slides.length <= 1) return;
+        // === YAHAN SLIDER FUNCTION KO PURI TARAH SE BADLA GAYA HAI ===
+        function initSlider() {
+            const track = document.getElementById('slider-track');
+            const container = document.getElementById('banner-container');
+            if (!track || !container || track.children.length <= 1) return;
 
-            slides.forEach((slide, index) => {
-                slide.style.transform = `translateX(${100 * index}%)`;
-            });
-
-            let currentSlide = 0;
+            const slides = Array.from(track.children);
             const slideCount = slides.length;
+            
+            // Clone slides for infinite loop
+            const firstClone = slides[0].cloneNode(true);
+            const lastClone = slides[slideCount - 1].cloneNode(true);
+            track.appendChild(firstClone);
+            track.insertBefore(lastClone, slides[0]);
 
-            setInterval(() => {
-                currentSlide++; 
-                slides.forEach((slide, index) => {
-                    slide.style.transform = `translateX(${100 * (index - currentSlide)}%)`;
-                });
+            let currentIndex = 1;
+            let startX = 0;
+            let currentTranslate = 0;
+            let prevTranslate = 0;
+            let isDragging = false;
+            let animationID;
+            let autoSlideTimer;
 
-                if (currentSlide === slideCount) {
-                    setTimeout(() => {
-                        slides.forEach(slide => slide.style.transition = 'none');
-                        currentSlide = 0;
-                        slides.forEach((slide, index) => {
-                            slide.style.transform = `translateX(${100 * (index - currentSlide)}%)`;
-                        });
-                        setTimeout(() => {
-                             slides.forEach(slide => slide.style.transition = 'transform 1s ease-in-out');
-                        }, 50);
-                    }, 1000); // Animation duration (1s) ke saath match karein
+            const setPositionByIndex = () => {
+                currentTranslate = currentIndex * -container.offsetWidth;
+                prevTranslate = currentTranslate;
+                track.style.transform = `translateX(${currentTranslate}px)`;
+            };
+
+            const getPositionX = (event) => event.touches ? event.touches[0].clientX : event.pageX;
+
+            const animation = () => {
+                track.style.transform = `translateX(${currentTranslate}px)`;
+                if (isDragging) requestAnimationFrame(animation);
+            };
+
+            const touchStart = (event) => {
+                clearInterval(autoSlideTimer);
+                isDragging = true;
+                startX = getPositionX(event);
+                animationID = requestAnimationFrame(animation);
+                track.style.transition = 'none';
+            };
+
+            const touchMove = (event) => {
+                if (isDragging) {
+                    const currentX = getPositionX(event);
+                    currentTranslate = prevTranslate + currentX - startX;
                 }
-            }, 3000); // Slide interval ko 3 second kiya gaya
+            };
+
+            const touchEnd = () => {
+                isDragging = false;
+                cancelAnimationFrame(animationID);
+                const movedBy = currentTranslate - prevTranslate;
+
+                if (movedBy < -100) currentIndex++;
+                if (movedBy > 100) currentIndex--;
+                
+                track.style.transition = 'transform 0.5s ease-out';
+                setPositionByIndex();
+                startAutoSlide();
+            };
+
+            const checkIndex = () => {
+                if (currentIndex === 0) {
+                    track.style.transition = 'none';
+                    currentIndex = slideCount;
+                    setPositionByIndex();
+                }
+                if (currentIndex === slideCount + 1) {
+                    track.style.transition = 'none';
+                    currentIndex = 1;
+                    setPositionByIndex();
+                }
+            };
+            
+            const startAutoSlide = () => {
+                clearInterval(autoSlideTimer);
+                autoSlideTimer = setInterval(() => {
+                    currentIndex++;
+                    track.style.transition = 'transform 0.5s ease-out';
+                    setPositionByIndex();
+                }, 3000);
+            };
+
+            track.addEventListener('transitionend', checkIndex);
+            
+            // Click/Tap Navigation
+            track.addEventListener('click', (e) => {
+                // Prevent navigation if swipe was more than a few pixels
+                if (Math.abs(currentTranslate - prevTranslate) > 5) return;
+                
+                const slide = e.target.closest('.hero-slide');
+                if (slide) {
+                    const data = JSON.parse(slide.dataset.details);
+                    navigateTo("details-page", data);
+                }
+            }, true);
+
+            // Add all event listeners
+            container.addEventListener('touchstart', touchStart, { passive: true });
+            container.addEventListener('touchend', touchEnd);
+            container.addEventListener('touchmove', touchMove, { passive: true });
+            container.addEventListener('mousedown', touchStart);
+            container.addEventListener('mouseup', touchEnd);
+            container.addEventListener('mouseleave', () => { if (isDragging) touchEnd(); });
+            container.addEventListener('mousemove', touchMove);
+            window.addEventListener('resize', setPositionByIndex);
+
+            setPositionByIndex();
+            startAutoSlide();
         }
         
         document.addEventListener('DOMContentLoaded', initializeApp);
