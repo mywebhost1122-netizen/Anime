@@ -7,7 +7,17 @@
     <style>
         :root { --primary-red: #E50914; --background-color: #141414; --text-color: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--background-color); color: var(--text-color); }
+        /* --- बदला हुआ BODY स्टाइल --- */
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: var(--background-color); 
+            color: var(--text-color);
+            /* यह सुनिश्चित करता है कि बैकग्राउंड इमेज पूरी स्क्रीन पर फैले */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* स्क्रॉल करने पर इमेज स्थिर रहती है */
+            transition: background-image 0.5s ease-in-out; /* स्मूथ ट्रांजीशन के लिए */
+        }
         .page { display: none; padding-bottom: 70px; }
         .page.active { display: block; }
         #main-header, #secondary-header { padding: 15px 20px; }
@@ -65,80 +75,51 @@
         #item-comment-header { display: flex; align-items: center; padding: 15px; background-color: #1f1f1f; }
         #item-comment-poster { width: 60px; height: 85px; object-fit: cover; border-radius: 6px; margin-right: 15px; }
         #item-comment-title { font-size: 18px; font-weight: bold; }
-        #name-entry-container { padding: 50px 20px; text-align: center; }
+        #name-entry-container { padding: 50px 30px; text-align: center; }
+        #name-entry-container h2 { margin-bottom: 25px; font-size: 20px; }
+        .name-input { width: 100%; max-width: 350px; padding: 14px 20px; background-color: #2c2c2c; border: 1px solid #555; border-radius: 8px; color: var(--text-color); font-size: 16px; margin: 0 auto 20px auto; display: block; box-sizing: border-box; }
+        .name-input:focus { outline: none; border-color: var(--primary-red); box-shadow: 0 0 10px rgba(229, 9, 20, 0.5); }
+        .enter-btn { display: inline-block; width: 100%; max-width: 350px; padding: 14px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         #comment-section-container { display: none; height: calc(100vh - 250px); display: flex; flex-direction: column; }
         #comments-list { flex-grow: 1; overflow-y: auto; padding: 20px; }
         .comment-item { margin-bottom: 15px; padding: 10px; background-color: #2a2a2a; border-radius: 8px; }
         #comment-input-area { display: flex; padding: 15px; border-top: 1px solid #333; background-color: #181818; }
         .comment-input { flex-grow: 1; padding: 10px; background-color: #2c2c2c; border: 1px solid #555; border-radius: 20px; color: var(--text-color); font-size: 15px; margin-right: 10px; }
         .send-btn { padding: 10px 15px; background-color: var(--primary-red); border: none; border-radius: 20px; color: var(--text-color); font-weight: bold; cursor: pointer; }
-        
-        /* --- UPDATE PAGE STYLES --- */
         #update-list-container { padding: 20px; }
         .update-card { background-color: #2a2a2a; border-radius: 10px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         .update-banner { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background-color: #333; }
         .update-description { padding: 15px; font-size: 14px; line-height: 1.6; }
-
-        /* PC/Desktop ke liye Responsive Styles */
         @media (min-width: 768px) {
-            .row-content {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 20px;
-                overflow-x: hidden;
-            }
+            .row-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; overflow-x: hidden; }
             .anime-card { width: auto; }
-            #search-results-wrapper, #saved-items-list {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 20px;
-            }
+            #search-results-wrapper, #saved-items-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
             .search-result-item { max-width: 450px; }
-            #update-list-container {
-                max-width: 800px;
-                margin: 0 auto;
-            }
+            #update-list-container { max-width: 800px; margin: 0 auto; }
         }
     </style>
 </head>
 <body>
     <header id="main-header"><div class="header-content"><div class="logo-group"><div class="logo-placeholder"></div><h1 class="website-name">Anime<span>Buzz</span></h1></div></div></header>
     <header id="secondary-header"><div class="header-content" id="secondary-header-content"></div></header>
-
     <div id="home-page" class="page active"><main><section id="banner-container" class="slider-container"><div id="slider-track" class="slider-track"></div></section><div id="home-rows"></div></main></div>
     <div id="search-page" class="page"><div class="search-bar-container"><input type="text" id="searchInput" class="search-input" placeholder="Search..." onkeyup="handleSearch()"></div><div id="search-results-wrapper"></div></div>
     <div id="saved-page" class="page"><div id="saved-items-list"></div></div>
     <div id="update-page" class="page"><div id="update-list-container"></div></div>
     <div id="details-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a><div class="details-content-wrapper"><div class="details-poster-container"><img src="" id="details-poster" class="details-poster" loading="lazy"></div><div class="details-info"><h1 id="details-title"></h1><p id="details-desc"></p></div><div class="action-button-container"><button id="details-watch-btn" class="watch-btn" onclick="navigateTo('episodes-page')">Watch Now</button></div></div></div>
     <div id="episodes-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateTo('details-page')">Back</a><div id="episodes-container"></div></div>
-
     <div id="item-comment-page" class="page">
         <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
-        <div id="item-comment-header">
-            <img src="" id="item-comment-poster" alt="Anime Poster" loading="lazy">
-            <h2 id="item-comment-title"></h2>
-        </div>
-        <div id="name-entry-container">
-            <h2>Enter Your Name to Comment</h2>
-            <input type="text" id="nameInput" class="name-input" placeholder="Your Name">
-            <button class="enter-btn" onclick="handleNameSubmit()">Enter</button>
-        </div>
-        <div id="comment-section-container" style="display:none;">
-            <div id="comments-list"></div>
-            <div id="comment-input-area">
-                <input type="text" id="commentInput" class="comment-input" placeholder="Type a comment...">
-                <button class="send-btn" onclick="sendItemComment()">Send</button>
-            </div>
-        </div>
+        <div id="item-comment-header"><img src="" id="item-comment-poster" alt="Anime Poster" loading="lazy"><h2 id="item-comment-title"></h2></div>
+        <div id="name-entry-container"><h2>Enter Your Name to Comment</h2><input type="text" id="nameInput" class="name-input" placeholder="Your Name"><button class="enter-btn" onclick="handleNameSubmit()">Enter</button></div>
+        <div id="comment-section-container" style="display:none;"><div id="comments-list"></div><div id="comment-input-area"><input type="text" id="commentInput" class="comment-input" placeholder="Type a comment..."><button class="send-btn" onclick="sendItemComment()">Send</button></div></div>
     </div>
-    
     <nav class="bottom-nav">
         <a id="nav-home" class="nav-item active" onclick="navigateTo('home-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg><span>Home</span></a>
         <a id="nav-search" class="nav-item" onclick="navigateTo('search-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"></path></svg><span>Search</span></a>
         <a id="nav-saved" class="nav-item" onclick="navigateTo('saved-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg><span>Saved</span></a>
         <a id="nav-update" class="nav-item" onclick="navigateTo('update-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-1.707-1.707A1 1 0 00.879 11.293l-1.293 1.293a1 1 0 000 1.414l5 5a1 1 0 001.414 0l5-5a1 1 0 000-1.414l-1.293-1.293a1 1 0 00-1.414-.293L10 11.586V8a4 4 0 118 0v1a1 1 0 102 0V8a6 6 0 00-6-6z"></path></svg><span>Update</span></a>
     </nav>
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script>
@@ -166,7 +147,6 @@
             }
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId)?.classList.add('active');
-
             if (pageId === 'details-page' && data) {
                 currentItemData = data;
                 document.getElementById('details-poster').src = data.imageUrl;
@@ -234,13 +214,38 @@
         function createAnimeCard(item) {
             const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : '';
             const safeDetails = JSON.stringify(item).replace(/'/g, '&apos;');
-            return `<div class="anime-card" data-details='${safeDetails}'>
-                        <div class="anime-card-poster"><img loading="lazy" src="${item.imageUrl}" alt="${item.title}"> ${langTag}</div>
-                        <p>${item.title}</p>
-                    </div>`;
+            return `<div class="anime-card" data-details='${safeDetails}'><div class="anime-card-poster"><img loading="lazy" src="${item.imageUrl}" alt="${item.title}"> ${langTag}</div><p>${item.title}</p></div>`;
+        }
+        
+        // --- नई कार्यक्षमता ---
+        function applyPrimaryColor(color) {
+            if (color) {
+                document.documentElement.style.setProperty('--primary-red', color);
+            }
         }
 
+        function applyBackground(url) {
+            if (url) {
+                document.body.style.backgroundImage = `url('${url}')`;
+            }
+        }
+
+        async function fetchAndApplySiteConfig() {
+            try {
+                const doc = await db.collection('siteConfig').doc('main').get();
+                if (doc.exists) {
+                    const config = doc.data();
+                    applyPrimaryColor(config.primaryColor);
+                    applyBackground(config.backgroundUrl);
+                }
+            } catch (err) {
+                console.error("Error fetching site config:", err);
+            }
+        }
+        // --- अंत: नई कार्यक्षमता ---
+
         function initializeApp() {
+            fetchAndApplySiteConfig(); // <-- यहाँ नया फंक्शन कॉल किया गया है
             savedItems = JSON.parse(localStorage.getItem('animeBuzzSaved')) || [];
             db.collection('anime').onSnapshot(snapshot => {
                 allData.anime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -262,11 +267,7 @@
             if (updatesList.length === 0) {
                 container.innerHTML = `<div id="no-results"><p>No updates available right now.</p></div>`; return;
             }
-            container.innerHTML = updatesList.map(update => `
-                <div class="update-card">
-                    <img src="${update.bannerUrl}" alt="Update Banner" class="update-banner" loading="lazy">
-                    <div class="update-description"><p>${update.description ? update.description.replace(/\n/g, '<br>') : 'No description.'}</p></div>
-                </div>`).join('');
+            container.innerHTML = updatesList.map(update => `<div class="update-card"><img src="${update.bannerUrl}" alt="Update Banner" class="update-banner" loading="lazy"><div class="update-description"><p>${update.description ? update.description.replace(/\n/g, '<br>') : 'No description.'}</p></div></div>`).join('');
         }
 
         function renderBanners(banners) {
@@ -277,10 +278,7 @@
                 const bannerData = { ...banner, id: banner.id || banner.title.replace(/\s+/g, '-') };
                 const styleAttribute = banner.imageUrl ? `style="background-image: url('${banner.imageUrl}');"` : '';
                 const safeDetails = JSON.stringify(bannerData).replace(/'/g, '&apos;');
-                return `<div class="hero-slide" ${styleAttribute} data-details='${safeDetails}'>
-                            <h3 class="hero-title">${banner.title}</h3>
-                            <button class="watch-now-btn"><span>${banner.buttonText || 'Watch Now'}</span><span>&gt;</span></button>
-                        </div>`;
+                return `<div class="hero-slide" ${styleAttribute} data-details='${safeDetails}'><h3 class="hero-title">${banner.title}</h3><button class="watch-now-btn"><span>${banner.buttonText || 'Watch Now'}</span><span>&gt;</span></button></div>`;
             }).join('');
             if (!sliderInitialized) { initSlider(); sliderInitialized = true; }
         }
@@ -292,20 +290,12 @@
                 (acc[anime.category || "Trending"] = acc[anime.category || "Trending"] || []).push(anime);
                 return acc;
             }, {});
-            container.innerHTML = Object.entries(categories).map(([category, items]) =>
-                `<section class="anime-row"><h2>${category}</h2><div class="row-content">${items.map(createAnimeCard).join('')}</div></section>`
-            ).join('');
+            container.innerHTML = Object.entries(categories).map(([category, items]) => `<section class="anime-row"><h2>${category}</h2><div class="row-content">${items.map(createAnimeCard).join('')}</div></section>`).join('');
         }
 
         function createSearchResultItem(item) {
             const safeDetails = JSON.stringify(item).replace(/'/g, '&apos;');
-            return `<div class="search-result-item" data-details='${safeDetails}'>
-                        <div class="search-item-poster"><img loading="lazy" src="${item.imageUrl}" alt="${item.title}">${item.language ? `<span class="language-tag">${item.language}</span>` : ''}</div>
-                        <div class="search-item-info">
-                            <div class="search-item-title">${item.title}</div>
-                            <div class="search-item-desc">${item.description || 'No description available.'}</div>
-                        </div>
-                    </div>`;
+            return `<div class="search-result-item" data-details='${safeDetails}'><div class="search-item-poster"><img loading="lazy" src="${item.imageUrl}" alt="${item.title}">${item.language ? `<span class="language-tag">${item.language}</span>` : ''}</div><div class="search-item-info"><div class="search-item-title">${item.title}</div><div class="search-item-desc">${item.description || 'No description available.'}</div></div></div>`;
         }
 
         function handleSearch(showAll = false) {
@@ -319,9 +309,7 @@
 
         function renderDownloadPage() {
             const container = document.getElementById("episodes-container");
-            container.innerHTML = currentItemData && currentItemData.episodeLink ?
-                `<div class="download-btn-container"><button class="download-btn" onclick="openExternalLink('${currentItemData.episodeLink}')">Download file</button></div>` :
-                '<p style="padding: 20px;">Download link not available.</p>';
+            container.innerHTML = currentItemData && currentItemData.episodeLink ? `<div class="download-btn-container"><button class="download-btn" onclick="openExternalLink('${currentItemData.episodeLink}')">Download file</button></div>` : '<p style="padding: 20px;">Download link not available.</p>';
         }
 
         function navigateBack() { if (pageHistory.length > 1) { pageHistory.pop(); navigateTo(pageHistory[pageHistory.length - 1]); } }
@@ -332,32 +320,23 @@
             const mainHeader = document.getElementById("main-header");
             const secondaryHeader = document.getElementById("secondary-header");
             const headerContentEl = document.getElementById("secondary-header-content");
-
             if (title) {
                 mainHeader.style.display = "none"; secondaryHeader.style.display = "block";
                 let headerContent = `<h1 class="website-name">${title}</h1>`;
                 if ("details-page" === pageId && currentItemData) {
                     const safeTitle = currentItemData.title ? currentItemData.title.replace(/'/g, "\\'") : '';
-                    headerContent += `<div class="details-header-icons">
-                                        <svg class="comment-icon-header" onclick="goToItemCommentPage()" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.839 8.839 0 01-4.09-1.078A.5.5 0 015.343 15.54l-1.7-1.7a.5.5 0 01.354-.853l2.295.215a6.002 6.002 0 007.708-7.708l-.215-2.295a.5.5 0 01.853-.354l1.7 1.7A.5.5 0 0115.923 5.91 8.839 8.839 0 0118 10zM10 7a1 1 0 100-2 1 1 0 000 2zm-2 1a1 1 0 11-2 0 1 1 0 012 0zm5 0a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"></path></svg>
-                                        <svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                      </div>`;
+                    headerContent += `<div class="details-header-icons"><svg class="comment-icon-header" onclick="goToItemCommentPage()" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.839 8.839 0 01-4.09-1.078A.5.5 0 015.343 15.54l-1.7-1.7a.5.5 0 01.354-.853l2.295.215a6.002 6.002 0 007.708-7.708l-.215-2.295a.5.5 0 01.853-.354l1.7 1.7A.5.5 0 0115.923 5.91 8.839 8.839 0 0118 10zM10 7a1 1 0 100-2 1 1 0 000 2zm-2 1a1 1 0 11-2 0 1 1 0 012 0zm5 0a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"></path></svg><svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>`;
                 }
                 headerContentEl.innerHTML = headerContent;
-            } else {
-                mainHeader.style.display = "block"; secondaryHeader.style.display = "none";
-            }
+            } else { mainHeader.style.display = "block"; secondaryHeader.style.display = "none"; }
             document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
             document.getElementById(`nav-${pageId.split("-")[0]}`)?.classList.add("active");
         }
 
         function toggleSave(icon, id, title, imageUrl) {
             const isSaved = icon.classList.toggle("saved");
-            if (isSaved) {
-                if (!savedItems.some(i => i.id === id)) savedItems.push({ id, title, imageUrl });
-            } else {
-                savedItems = savedItems.filter(i => i.id !== id);
-            }
+            if (isSaved) { if (!savedItems.some(i => i.id === id)) savedItems.push({ id, title, imageUrl }); }
+            else { savedItems = savedItems.filter(i => i.id !== id); }
             localStorage.setItem("animeBuzzSaved", JSON.stringify(savedItems));
         }
 
@@ -366,55 +345,48 @@
             if (savedItems.length > 0) {
                 const fullItems = savedItems.map(item => allData.anime.find(a => a.id === item.id) || item);
                 listContainer.innerHTML = fullItems.map(createSearchResultItem).join('');
-            } else {
-                listContainer.innerHTML = `<div id="no-results"><p>Nothing saved yet.</p></div>`;
-            }
+            } else { listContainer.innerHTML = `<div id="no-results"><p>Nothing saved yet.</p></div>`; }
         }
 
         function openExternalLink(url) { if (url && url.startsWith("https")) window.open(url, "_blank"); else alert("Invalid URL."); }
 
         function initSlider() {
-            const track = document.getElementById('slider-track');
             const container = document.getElementById('banner-container');
-            if (!track || !container || track.children.length <= 1) return;
-            track.querySelectorAll('.clone').forEach(clone => clone.remove());
+            const track = document.getElementById('slider-track');
+            if (!container || !track) return;
             let slides = Array.from(track.children);
-            let slideCount = slides.length;
-            if (slideCount <= 1) return;
+            if (slides.length <= 1) return;
+            const slideCount = slides.length;
+            const transitionTime = 400; const autoSlideInterval = 3000;
+            track.style.setProperty('--transition-time', `${transitionTime}ms`);
             const firstClone = slides[0].cloneNode(true); firstClone.classList.add('clone');
             const lastClone = slides[slideCount - 1].cloneNode(true); lastClone.classList.add('clone');
             track.appendChild(firstClone); track.insertBefore(lastClone, slides[0]);
-            let currentIndex = 1, startX = 0, currentTranslate = 0, prevTranslate = 0, isDragging = false, animationID, autoSlideTimer;
-            const setPositionByIndex = () => { currentTranslate = currentIndex * -container.offsetWidth; prevTranslate = currentTranslate; track.style.transform = `translateX(${currentTranslate}px)`; };
-            const getPositionX = (event) => event.touches ? event.touches[0].clientX : event.pageX;
-            const animation = () => { track.style.transform = `translateX(${currentTranslate}px)`; if (isDragging) requestAnimationFrame(animation); };
-            const touchStart = (event) => { clearInterval(autoSlideTimer); isDragging = true; startX = getPositionX(event); animationID = requestAnimationFrame(animation); track.style.transition = 'none'; };
-            const touchMove = (event) => { if (isDragging) { const currentX = getPositionX(event); currentTranslate = prevTranslate + currentX - startX; } };
-            const touchEnd = () => {
-                isDragging = false; cancelAnimationFrame(animationID);
-                const movedBy = currentTranslate - prevTranslate;
-                if (movedBy < -100) currentIndex++;
-                if (movedBy > 100) currentIndex--;
-                track.style.transition = 'transform 0.5s ease-out';
-                setPositionByIndex();
-                startAutoSlide();
-            };
-            const checkIndex = () => {
-                if (currentIndex === 0) { track.style.transition = 'none'; currentIndex = slideCount; setPositionByIndex(); }
-                if (currentIndex === slideCount + 1) { track.style.transition = 'none'; currentIndex = 1; setPositionByIndex(); }
-            };
-            const startAutoSlide = () => { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => { currentIndex++; track.style.transition = 'transform 0.5s ease-out'; setPositionByIndex(); }, 3000); };
-            track.addEventListener('transitionend', checkIndex);
-            container.addEventListener('touchstart', touchStart, { passive: true });
-            container.addEventListener('touchend', touchEnd);
-            container.addEventListener('touchmove', touchMove, { passive: true });
-            container.addEventListener('mousedown', touchStart);
-            container.addEventListener('mouseup', touchEnd);
-            container.addEventListener('mouseleave', () => { if (isDragging) touchEnd(); });
-            container.addEventListener('mousemove', touchMove);
+            let currentIndex = 1; let isDragging = false; let startPos = 0; let currentTranslate = 0; let prevTranslate = 0; let autoSlideTimer;
+            function getPositionX(event) { return event.touches ? event.touches[0].clientX : event.pageX; }
+            function setPositionByIndex() { currentTranslate = currentIndex * -container.offsetWidth; track.style.transform = `translateX(${currentTranslate}px)`; }
+            function shiftSlides() {
+                if (currentIndex <= 0) { track.style.transition = 'none'; currentIndex = slideCount; setPositionByIndex(); }
+                else if (currentIndex >= slideCount + 1) { track.style.transition = 'none'; currentIndex = 1; setPositionByIndex(); }
+                setTimeout(() => { track.style.transition = `transform ${transitionTime}ms ease-out`; }, 50);
+            }
+            function startAutoSlide() {
+                clearInterval(autoSlideTimer);
+                autoSlideTimer = setInterval(() => { currentIndex++; setPositionByIndex(); if (currentIndex >= slideCount + 1) { setTimeout(shiftSlides, transitionTime); } }, autoSlideInterval);
+            }
+            function dragStart(event) { clearInterval(autoSlideTimer); isDragging = true; startPos = getPositionX(event); prevTranslate = currentTranslate; track.style.transition = 'none'; }
+            function dragMove(event) { if (isDragging) { const currentPosition = getPositionX(event); currentTranslate = prevTranslate + currentPosition - startPos; track.style.transform = `translateX(${currentTranslate}px)`; } }
+            function dragEnd() {
+                if (!isDragging) return; isDragging = false; const movedBy = currentTranslate - prevTranslate;
+                if (movedBy < -100) currentIndex++; else if (movedBy > 100) currentIndex--;
+                track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); shiftSlides(); startAutoSlide();
+            }
+            container.addEventListener('mousedown', dragStart); container.addEventListener('touchstart', dragStart, { passive: true });
+            container.addEventListener('mouseup', dragEnd); container.addEventListener('touchend', dragEnd);
+            container.addEventListener('mouseleave', dragEnd); container.addEventListener('mousemove', dragMove);
+            container.addEventListener('touchmove', dragMove, { passive: true });
             window.addEventListener('resize', setPositionByIndex);
-            setPositionByIndex();
-            startAutoSlide();
+            track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); startAutoSlide();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -422,12 +394,8 @@
             document.body.addEventListener('click', (event) => {
                 const clickableItem = event.target.closest('.anime-card, .search-result-item, .hero-slide');
                 if (clickableItem && clickableItem.dataset.details) {
-                    try {
-                        const details = JSON.parse(clickableItem.dataset.details.replace(/&apos;/g, "'"));
-                        navigateTo('details-page', details);
-                    } catch (e) {
-                        console.error("Failed to parse data-details JSON:", e);
-                    }
+                    try { const details = JSON.parse(clickableItem.dataset.details.replace(/&apos;/g, "'")); navigateTo('details-page', details); }
+                    catch (e) { console.error("Failed to parse data-details JSON:", e); }
                 }
             });
         });
