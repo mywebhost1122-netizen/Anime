@@ -42,6 +42,8 @@
         .logo-group { display: flex; align-items: center; }
         .logo-placeholder { width: 35px; height: 35px; border-radius: 6px; margin-right: 15px; background-image: url('https://i.postimg.cc/gjS2LNtp/d036b4adf7918cd38c1b8f06523b7580.jpg'); background-size: cover; background-position: center; }
         .website-name { font-size: 26px; font-weight: 900; }
+        /* --- CHANGE HERE: This makes the "Buzz" part of the title change color --- */
+        .website-name span { color: var(--primary-red); }
         .details-title-group { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
         .uploader-name { font-size: 13px; color: #ccc; font-weight: 400; }
         .details-header-icons { display: flex; align-items: center; gap: 20px; }
@@ -224,26 +226,33 @@
             if(sliderTrack) { sliderTrack.addEventListener('click', (event) => { const watchButton = event.target.closest('.watch-now-btn'); if (watchButton && watchButton.dataset.details) { try { const details = JSON.parse(watchButton.dataset.details.replace(/&apos;/g, "'")); navigateTo('details-page', details); } catch (e) { console.error("Failed to parse banner button data-details JSON:", e); } } }); }
         });
 
-        async function initializeApp() {
+        function initializeApp() {
             try {
-                const siteConfigPromise = db.collection('siteConfig').doc('main').get();
-                const animePromise = db.collection('anime').get();
-                const bannersPromise = db.collection('animeBanners').get();
-                
-                const [configDoc, animeSnapshot, bannersSnapshot] = await Promise.all([siteConfigPromise, animePromise, bannersPromise]);
+                // Real-time listener for site configuration (name, color, background)
+                db.collection('siteConfig').doc('main').onSnapshot(doc => {
+                    if (doc.exists) {
+                        const config = doc.data();
+                        applyPrimaryColor(config.primaryColor);
+                        applyBackground(config.backgroundUrl);
+                        applyWebsiteName(config.websiteName);
+                    }
+                }, err => console.error("Error fetching site config:", err));
 
-                if (configDoc.exists) {
-                    const config = configDoc.data();
-                    applyPrimaryColor(config.primaryColor);
-                    applyBackground(config.backgroundUrl);
-                }
+                // Real-time listener for anime list
+                db.collection('anime').onSnapshot(snapshot => {
+                    allData.anime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderHomePage(allData.anime);
+                    if (document.getElementById('search-page').classList.contains('active')) {
+                        handleSearch(); 
+                    }
+                }, err => console.error("Error fetching anime:", err));
 
-                allData.anime = animeSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                allData.animeBanners = bannersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                renderHomePage(allData.anime);
-                renderBanners(allData.animeBanners);
-                
+                // Real-time listener for banners
+                db.collection('animeBanners').onSnapshot(snapshot => {
+                    allData.animeBanners = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderBanners(allData.animeBanners);
+                }, err => console.error("Error fetching banners:", err));
+
                 isAppReady = true;
 
                 if (userName) {
@@ -254,13 +263,14 @@
                 }
 
                 setupRealtimeListeners();
-                
+
             } catch (err) {
                 console.error("Error initializing app:", err);
                 document.getElementById('loader-text').innerHTML = "<p>Failed to load data. Please refresh.</p>";
             }
         }
         
+        // Real-time listener for updates page
         function setupRealtimeListeners() {
             db.collection('updates').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
                 const updates = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -325,6 +335,16 @@
         function createAnimeCard(item) { const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : ''; const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;'); return `<div class="anime-card" data-details='${safeDetails}'><div class="anime-card-poster"><img loading="lazy" src="${item.imageUrl}" alt="${item.title}"> ${langTag}</div><p>${item.title}</p></div>`; }
         function applyPrimaryColor(color) { if (color) { document.documentElement.style.setProperty('--primary-red', color); } }
         function applyBackground(url) { if (url) { document.body.style.backgroundImage = `url('${url}')`; } }
+        
+        function applyWebsiteName(name) {
+            if (name) {
+                const nameElement = document.querySelector('#main-header .website-name');
+                if (nameElement) {
+                    nameElement.innerHTML = `${name}<span>Buzz</span>`;
+                }
+            }
+        }
+
         function renderUpdates(updatesList) { const container = document.getElementById('update-list-container'); if (!container) return; if (updatesList.length === 0) { container.innerHTML = `<div id="no-results"><p>No updates available right now.</p></div>`; return; } container.innerHTML = updatesList.map(update => `<div class="update-card"><img src="${update.bannerUrl}" alt="Update Banner" class="update-banner" loading="lazy"><div class="update-description"><p>${update.description ? update.description.replace(/\n/g, '<br>') : 'No description.'}</p></div></div>`).join(''); }
         function renderBanners(banners) { const track = document.getElementById('slider-track'); if (!track) return; if (banners.length === 0) { track.innerHTML = ""; return; } track.innerHTML = banners.map(banner => { const bannerData = { ...banner, type: 'banner', id: banner.id || banner.title.replace(/\s+/g, '-') }; const styleAttribute = banner.imageUrl ? `style="background-image: url('${banner.imageUrl}');"` : ''; const safeDetails = JSON.stringify(bannerData).replace(/'/g, '&apos;'); return `<div class="hero-slide" ${styleAttribute}><h3 class="hero-title">${banner.title}</h3><button class="watch-now-btn" data-details='${safeDetails}'><span>${banner.buttonText || 'Watch Now'}</span><span>&gt;</span></button></div>`; }).join(''); if (!sliderInitialized) { initSlider(); sliderInitialized = true; } }
         function renderHomePage(animeList) { const container = document.getElementById("home-rows"); if (!container) return; savedItems = JSON.parse(localStorage.getItem('animeBuzzSaved')) || []; const categories = animeList.reduce((acc, anime) => { (acc[anime.category || "Trending"] = acc[anime.category || "Trending"] || []).push(anime); return acc; }, {}); container.innerHTML = Object.entries(categories).map(([category, items]) => `<section class="anime-row"><h2>${category}</h2><div class="row-content">${items.map(createAnimeCard).join('')}</div></section>`).join(''); }
@@ -337,4 +357,4 @@
         function initSlider() { const container = document.getElementById('banner-container'); const track = document.getElementById('slider-track'); if (!container || !track) return; let slides = Array.from(track.children); if (slides.length <= 1) return; const slideCount = slides.length; const transitionTime = 400; const autoSlideInterval = 3000; track.style.setProperty('--transition-time', `${transitionTime}ms`); const firstClone = slides[0].cloneNode(true); firstClone.classList.add('clone'); const lastClone = slides[slideCount - 1].cloneNode(true); lastClone.classList.add('clone'); track.appendChild(firstClone); track.insertBefore(lastClone, slides[0]); let currentIndex = 1; let isDragging = false; let startPos = 0; let currentTranslate = 0; let prevTranslate = 0; let autoSlideTimer; function getPositionX(event) { return event.touches ? event.touches[0].clientX : event.pageX; } function setPositionByIndex() { currentTranslate = currentIndex * -container.offsetWidth; track.style.transform = `translateX(${currentTranslate}px)`; } function shiftSlides() { if (currentIndex <= 0) { track.style.transition = 'none'; currentIndex = slideCount; setPositionByIndex(); } else if (currentIndex >= slideCount + 1) { track.style.transition = 'none'; currentIndex = 1; setPositionByIndex(); } setTimeout(() => { track.style.transition = `transform ${transitionTime}ms ease-out`; }, 50); } function startAutoSlide() { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => { currentIndex++; setPositionByIndex(); if (currentIndex >= slideCount + 1) { setTimeout(shiftSlides, transitionTime); } }, autoSlideInterval); } function dragStart(event) { clearInterval(autoSlideTimer); isDragging = true; startPos = getPositionX(event); prevTranslate = currentTranslate; track.style.transition = 'none'; } function dragMove(event) { if (isDragging) { const currentPosition = getPositionX(event); currentTranslate = prevTranslate + currentPosition - startPos; track.style.transform = `translateX(${currentTranslate}px)`; } } function dragEnd() { if (!isDragging) return; isDragging = false; const movedBy = currentTranslate - prevTranslate; if (movedBy < -100) currentIndex++; else if (movedBy > 100) currentIndex--; track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); shiftSlides(); startAutoSlide(); } container.addEventListener('mousedown', dragStart); container.addEventListener('touchstart', dragStart, { passive: true }); container.addEventListener('mouseup', dragEnd); container.addEventListener('touchend', dragEnd); container.addEventListener('mouseleave', dragEnd); container.addEventListener('mousemove', dragMove); container.addEventListener('touchmove', dragMove, { passive: true }); window.addEventListener('resize', setPositionByIndex); track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); startAutoSlide(); }
     </script>
 </body>
- </html>
+  </html>
