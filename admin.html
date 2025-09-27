@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
@@ -41,7 +41,7 @@
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 3000; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #user-stats { text-align: center; margin-bottom: 20px; font-size: 18px; color: #ccc; }
+        #user-stats, #anime-stats { text-align: center; margin-bottom: 20px; font-size: 18px; color: #ccc; }
     </style>
 </head>
 <body>
@@ -49,9 +49,19 @@
     <div id="access-denied-modal" class="modal"><div class="modal-content"><h2 id="denied-message">Access Denied</h2><p>Your account has been banned or deleted.</p></div></div>
     
     <div id="admin-panel-content" style="display: none;">
-        <div id="anime-view" class="view active"><div class="container"><header><h1>Anime</h1></header><div class="list-section"><div id="anime-list"></div></div></div></div>
+        <div id="anime-view" class="view active">
+            <div class="container">
+                <header>
+                    <h1>Anime</h1>
+                    <!-- ===== यहाँ पर Total Anime की संख्या दिखाने के लिए div जोड़ा गया है ===== -->
+                    <div id="anime-stats"></div>
+                </header>
+                <div class="list-section">
+                    <div id="anime-list"></div>
+                </div>
+            </div>
+        </div>
         
-        <!-- ===== यहाँ Total Users का नया पेज जोड़ा गया है ===== -->
         <div id="users-view" class="view">
             <div class="container">
                 <header>
@@ -65,13 +75,11 @@
                 </div>
             </div>
         </div>
-        <!-- =================================================== -->
 
         <div id="form-view"><div class="form-container container"><div class="form-header"><h2 id="form-title"></h2><button class="btn-close-form" onclick="closeForm()">×</button></div><form id="main-form"><input type="hidden" id="docId"><input type="hidden" id="collectionName" value="anime"><div class="form-group"><label for="title">Title</label><input type="text" id="title" required></div><div class="form-group"><label for="imageUrl">Image URL</label><input type="url" id="imageUrl" required></div><div class="form-group"><label for="category">Category</label><input type="text" id="category"></div><div class="form-group"><label for="description">Description</label><textarea id="description"></textarea></div><div class="form-group"><label for="language">Language</label><input type="text" id="language"></div><div class="form-group"><label for="channelBotLink">Channel Link</label><input type="url" id="channelBotLink"></div><button type="submit" class="btn-primary" style="margin-top: 20px;">Save</button></form></div></div>
         <button class="fab" onclick="showAddChoice()">+</button>
     </div>
 
-    <!-- ===== + बटन का मेनू यहाँ जोड़ा गया है ===== -->
     <div id="add-choice-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -84,7 +92,6 @@
             </div>
         </div>
     </div>
-    <!-- ========================================== -->
 
     <div id="loader"><div class="spinner"></div></div>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -172,7 +179,7 @@
         mainForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             loader.style.display = 'flex';
-            const collection = document.getElementById('collectionName').value;
+            const collection = 'anime'; // Hardcoded to 'anime' as form is for anime
             const docId = document.getElementById('docId').value;
             let data = {
                 title: document.getElementById('title').value,
@@ -213,6 +220,12 @@
             listEl.innerHTML = '<p>Loading...</p>'; 
             try { 
                 const snapshot = await db.collection(collectionName).orderBy("title").get(); 
+                
+                // ===== यहाँ पर Total Anime की गिनती को अपडेट करने का कोड जोड़ा गया है =====
+                if (collectionName === 'anime') {
+                    document.getElementById('anime-stats').innerHTML = `Total Anime: ${snapshot.size}`;
+                }
+
                 let html = ''; 
                 if (!snapshot.empty) { 
                     snapshot.forEach(doc => { 
@@ -226,7 +239,6 @@
             } catch (e) { listEl.innerHTML = `<p>Error loading data.</p>`; } 
         }
 
-        // ===== यहाँ से नए फंक्शन शुरू होते हैं =====
         function showAddChoice() {
             addChoiceModal.classList.add('active');
         }
@@ -257,7 +269,6 @@
                     const user = doc.data();
                     const itemEl = document.createElement('div');
                     itemEl.className = 'list-item';
-                    // सिर्फ नाम दिखाया जाएगा
                     itemEl.innerHTML = `<span>${user.name}</span>`;
                     listEl.appendChild(itemEl);
                 });
@@ -266,8 +277,7 @@
                 console.error(err);
             }
         }
-        // ==========================================
-
+        
         document.addEventListener('DOMContentLoaded', checkInitialSetup);
     </script>
 </body>
