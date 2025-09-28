@@ -23,18 +23,23 @@
         }
         .name-entry-box { text-align: center; width: 100%; max-width: 400px; }
         .name-entry-box h2 { margin-bottom: 25px; font-size: 22px; font-weight: 600; }
-        .loader-text { font-size: 18px; color: #ccc; }
+        
+        .loader-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-red);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         #app-wrapper { display: none; }
         .page { display: none; padding-bottom: 70px; }
         .page.active { display: block; }
-
-        #profile-page-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 50px 20px;
-            min-height: calc(100vh - 150px);
-        }
 
         #main-header, #secondary-header { padding: 15px 20px; }
         #secondary-header { display: none; }
@@ -42,15 +47,13 @@
         .logo-group { display: flex; align-items: center; }
         .logo-placeholder { width: 35px; height: 35px; border-radius: 6px; margin-right: 15px; background-image: url('https://i.postimg.cc/gjS2LNtp/d036b4adf7918cd38c1b8f06523b7580.jpg'); background-size: cover; background-position: center; }
         .website-name { font-size: 26px; font-weight: 900; }
-        /* --- CHANGE HERE: This makes the "Buzz" part of the title change color --- */
         .website-name span { color: var(--primary-red); }
         .details-title-group { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
         .uploader-name { font-size: 13px; color: #ccc; font-weight: 400; }
         .details-header-icons { display: flex; align-items: center; gap: 20px; }
-        .save-icon, .comment-icon-header { width: 30px; height: 30px; cursor: pointer; }
-        .save-icon path, .comment-icon-header path { fill: none; stroke: var(--text-color); stroke-width: 1.5; }
+        .save-icon { width: 30px; height: 30px; cursor: pointer; }
+        .save-icon path { fill: none; stroke: var(--text-color); stroke-width: 1.5; }
         .save-icon.saved path { fill: var(--primary-red); stroke: var(--primary-red); }
-        .comment-icon-header path { stroke-width: 1; fill: var(--text-color); }
         .back-btn { display: inline-block; color: var(--text-color); text-decoration: none; font-size: 18px; padding: 20px 20px 0 20px; }
         .back-btn:before { content: '‹ '; font-size: 24px; }
         .slider-container { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 768px; margin-bottom: 25px; overflow: hidden; background-color: #000; }
@@ -74,7 +77,7 @@
         #search-results-wrapper, #saved-items-list { padding: 0 20px; }
         .search-result-item { display: flex; align-items: flex-start; margin-bottom: 20px; cursor: default; }
         .search-item-poster { position: relative; width: 100px; height: 145px; flex-shrink: 0; cursor: pointer; }
-        .search-item-poster img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+        .search-item-poster img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; background-color: #333;}
         .search-item-info { padding-left: 15px; flex-grow: 1; }
         .search-item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
         .search-item-title { font-size: 17px; font-weight: bold; cursor: pointer; }
@@ -83,7 +86,7 @@
         .list-download-btn { padding: 8px 16px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
         .details-content-wrapper { padding: 20px; }
         .details-poster-container { max-width: 200px; margin: 0 auto 20px auto; }
-        .details-poster { width: 100%; border-radius: 10px; }
+        .details-poster { width: 100%; border-radius: 10px; background-color: #333;}
         .details-info h1 { font-size: 28px; }
         .details-info p { margin-top: 10px; color: #ccc; line-height: 1.5; }
         .action-button-container { margin-top: 25px; }
@@ -95,23 +98,11 @@
         .nav-item.active { color: var(--text-color); }
         .nav-icon { width: 26px; height: 26px; margin-bottom: 3px; }
         .nav-icon path { fill: currentColor; }
-        #item-comment-header { display: flex; align-items: center; padding: 15px; background-color: #1f1f1f; }
-        #item-comment-poster { width: 60px; height: 85px; object-fit: cover; border-radius: 6px; margin-right: 15px; }
-        #item-comment-title { font-size: 18px; font-weight: bold; }
-        #name-entry-container { padding: 50px 30px; text-align: center; }
-        #name-entry-container h2 { margin-bottom: 25px; font-size: 20px; }
         .name-input { width: 100%; max-width: 350px; padding: 14px 20px; background-color: #2c2c2c; border: 1px solid #555; border-radius: 8px; color: var(--text-color); font-size: 16px; margin: 0 auto 20px auto; display: block; box-sizing: border-box; }
         .name-input:focus { outline: none; border-color: var(--primary-red); box-shadow: 0 0 10px rgba(229, 9, 20, 0.5); }
         .enter-btn { display: inline-block; width: 100%; max-width: 350px; padding: 14px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
-        #comment-section-container { display: none; height: calc(100vh - 250px); display: flex; flex-direction: column; }
-        #comments-list { flex-grow: 1; overflow-y: auto; padding: 20px; }
-        .comment-item { margin-bottom: 15px; padding: 10px; background-color: #2a2a2a; border-radius: 8px; }
-        .comment-item.owner-reply strong { color: var(--primary-red); }
-        #comment-input-area { display: flex; padding: 15px; border-top: 1px solid #333; background-color: #181818; }
-        .comment-input { flex-grow: 1; padding: 10px; background-color: #2c2c2c; border: 1px solid #555; border-radius: 20px; color: var(--text-color); font-size: 15px; margin-right: 10px; }
-        .send-btn { padding: 10px 15px; background-color: var(--primary-red); border: none; border-radius: 20px; color: var(--text-color); font-weight: bold; cursor: pointer; }
         #update-list-container { padding: 20px; }
-        .update-card { background-color: #2a2a2a; border-radius: 10px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .update-card { background-color: #2a2a2a; border-radius: 10px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer; }
         .update-banner { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background-color: #333; }
         .update-description { padding: 15px; font-size: 14px; line-height: 1.6; }
         @media (min-width: 768px) {
@@ -130,8 +121,8 @@
             <input type="text" id="initialNameInput" class="name-input" placeholder="Your Name">
             <button class="enter-btn" onclick="submitInitialName()">Enter Anime Buzz</button>
         </div>
-        <div class="loader-text" id="loader-text">
-            <p>Loading Anime Buzz...</p>
+        <div id="loader-text">
+            <div class="loader-spinner"></div>
         </div>
     </div>
 
@@ -142,16 +133,23 @@
         <div id="search-page" class="page"><div class="search-bar-container"><input type="text" id="searchInput" class="search-input" placeholder="Search..." onkeyup="handleSearch()"></div><div id="search-results-wrapper"></div></div>
         <div id="saved-page" class="page"><div id="saved-items-list"></div></div>
         <div id="update-page" class="page"><div id="update-list-container"></div></div>
-        <div id="profile-page" class="page"><div id="profile-page-content"><button class="enter-btn" onclick="forceClearName()">Reset Name</button></div></div>
-        <div id="details-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a><div class="details-content-wrapper"><div class="details-poster-container"><img src="" id="details-poster" class="details-poster" loading="lazy"></div><div class="details-info"><h1 id="details-title"></h1><p id="details-desc"></p></div><div class="action-button-container"><button id="details-watch-btn" class="watch-btn" onclick="navigateTo('episodes-page')">Watch Now</button></div></div></div>
+
+        <div id="details-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a><div class="details-content-wrapper"><div class="details-poster-container"><img src="" id="details-poster" class="details-poster" loading="lazy" decoding="async"></div><div class="details-info"><h1 id="details-title"></h1><p id="details-desc"></p></div><div class="action-button-container"><button id="details-watch-btn" class="watch-btn" onclick="navigateTo('episodes-page')">Watch Now</button></div></div></div>
         <div id="episodes-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateTo('details-page')">Back</a><div id="episodes-container"></div></div>
-        <div id="item-comment-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a><div id="item-comment-header"><img src="" id="item-comment-poster" alt="Anime Poster" loading="lazy"><h2 id="item-comment-title"></h2></div><div id="name-entry-container"><h2>Enter Your Name to Comment</h2><input type="text" id="nameInput" class="name-input" placeholder="Your Name"><button class="enter-btn" onclick="handleNameSubmit()">Enter</button></div><div id="comment-section-container" style="display:none;"><div id="comments-list"></div><div id="comment-input-area"><input type="text" id="commentInput" class="comment-input" placeholder="Type a comment..."><button class="send-btn" onclick="sendItemComment()">Send</button></div></div></div>
+        
+        <div id="update-details-page" class="page">
+            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
+            <div class="details-content-wrapper">
+                <h1 id="update-details-title" style="margin-bottom: 15px;"></h1>
+                <p id="update-details-desc" style="white-space: pre-wrap; line-height: 1.7;"></p>
+            </div>
+        </div>
+
         <nav class="bottom-nav">
             <a id="nav-home" class="nav-item active" onclick="navigateTo('home-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg><span>Home</span></a>
             <a id="nav-search" class="nav-item" onclick="navigateTo('search-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"></path></svg><span>Search</span></a>
             <a id="nav-saved" class="nav-item" onclick="navigateTo('saved-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg><span>Saved</span></a>
             <a id="nav-update" class="nav-item" onclick="navigateTo('update-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-1.707-1.707A1 1 0 00.879 11.293l-1.293 1.293a1 1 0 000 1.414l5 5a1 1 0 001.414 0l5-5a1 1 0 000-1.414l-1.293-1.293a1 1 0 00-1.414-.293L10 11.586V8a4 4 0 118 0v1a1 1 0 102 0V8a6 6 0 00-6-6z"></path></svg><span>Update</span></a>
-            <a id="nav-profile" class="nav-item" onclick="navigateTo('profile-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg><span>Profile</span></a>
         </nav>
     </div>
 
@@ -168,18 +166,27 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        
-        let pageHistory = ['home-page'], savedItems = [], allData = { anime: [], animeBanners: [] }, currentItemData = null, userName = null, sliderInitialized = false, isAppReady = false;
 
-        function forceClearName() {
-            localStorage.removeItem('animeBuzzUserName');
-            alert('Name has been reset! The page will now refresh.');
-            window.location.reload();
-        }
+        let pageHistory = ['home-page'], savedItems = [], allData = { anime: [], animeBanners: [] }, currentItemData = null, userName = null, sliderInitialized = false;
+        let isAppReady = false;
+        let initialDataRendered = { banners: false, anime: false };
+        let fullAnimeListLoaded = false; 
 
         function revealApp() {
             document.getElementById('loader-container').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'block';
+        }
+
+        function checkInitialRenderComplete() {
+            if (initialDataRendered.banners && initialDataRendered.anime) {
+                isAppReady = true;
+                if (userName) {
+                    revealApp();
+                } else {
+                    document.getElementById('loader-text').style.display = 'none';
+                    document.getElementById('name-box').style.display = 'block';
+                }
+            }
         }
 
         async function submitInitialName() {
@@ -188,16 +195,13 @@
             if (enteredName !== '') {
                 userName = enteredName;
                 localStorage.setItem('animeBuzzUserName', enteredName);
-
                 try {
                     await db.collection('users').add({
                         name: enteredName,
                         status: 'active',
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                } catch (err) {
-                    console.error("Error saving user to Firestore:", err);
-                }
+                } catch (err) { console.error("Error saving user to Firestore:", err); }
 
                 if (isAppReady) {
                     revealApp();
@@ -205,20 +209,22 @@
                     document.getElementById('name-box').style.display = 'none';
                     document.getElementById('loader-text').style.display = 'block';
                 }
-            } else {
-                alert('Please enter your name.');
-            }
+            } else { alert('Please enter your name.'); }
         }
         
         document.addEventListener('DOMContentLoaded', () => {
             userName = localStorage.getItem('animeBuzzUserName');
             initializeApp();
             document.body.addEventListener('click', (event) => { 
-                const clickableItem = event.target.closest('.search-item-poster, .search-item-title, .anime-card'); 
+                const clickableItem = event.target.closest('.search-item-poster, .search-item-title, .anime-card, .update-card'); 
                 if (clickableItem && clickableItem.dataset.details) { 
                     try { 
                         const details = JSON.parse(clickableItem.dataset.details.replace(/&apos;/g, "'")); 
-                        navigateTo('details-page', details); 
+                        if (details.type === 'update') {
+                            navigateTo('update-details-page', details);
+                        } else {
+                            navigateTo('details-page', details); 
+                        }
                     } catch (e) { console.error("Failed to parse data-details JSON:", e); } 
                 } 
             });
@@ -228,7 +234,6 @@
 
         function initializeApp() {
             try {
-                // Real-time listener for site configuration (name, color, background)
                 db.collection('siteConfig').doc('main').onSnapshot(doc => {
                     if (doc.exists) {
                         const config = doc.data();
@@ -238,39 +243,47 @@
                     }
                 }, err => console.error("Error fetching site config:", err));
 
-                // Real-time listener for anime list
-                db.collection('anime').onSnapshot(snapshot => {
-                    allData.anime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                db.collection('anime').orderBy("title").limit(40).onSnapshot(snapshot => {
+                    const initialAnime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    if (!fullAnimeListLoaded) {
+                        allData.anime = initialAnime;
+                    }
                     renderHomePage(allData.anime);
-                    if (document.getElementById('search-page').classList.contains('active')) {
-                        handleSearch(); 
+                    
+                    if (!initialDataRendered.anime) {
+                        initialDataRendered.anime = true;
+                        checkInitialRenderComplete();
                     }
                 }, err => console.error("Error fetching anime:", err));
 
-                // Real-time listener for banners
                 db.collection('animeBanners').onSnapshot(snapshot => {
                     allData.animeBanners = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderBanners(allData.animeBanners);
+                    if (!initialDataRendered.banners) {
+                        initialDataRendered.banners = true;
+                        checkInitialRenderComplete();
+                    }
                 }, err => console.error("Error fetching banners:", err));
-
-                isAppReady = true;
-
-                if (userName) {
-                    revealApp();
-                } else {
-                    document.getElementById('loader-text').style.display = 'none';
-                    document.getElementById('name-box').style.display = 'block';
-                }
-
+                
                 setupRealtimeListeners();
-
             } catch (err) {
                 console.error("Error initializing app:", err);
                 document.getElementById('loader-text').innerHTML = "<p>Failed to load data. Please refresh.</p>";
             }
         }
+
+        async function fetchAllAnimeForSearch() {
+            if (fullAnimeListLoaded) return;
+            try {
+                const snapshot = await db.collection('anime').orderBy("title").get();
+                allData.anime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                fullAnimeListLoaded = true;
+                handleSearch(true);
+            } catch (err) {
+                console.error("Error fetching full anime list for search:", err);
+            }
+        }
         
-        // Real-time listener for updates page
         function setupRealtimeListeners() {
             db.collection('updates').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
                 const updates = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -283,11 +296,10 @@
             const ratingHtml = item.rating ? `<div class="rating-display">⭐ ${item.rating}</div>` : '';
             const episodeLink = item.episodeLink ? item.episodeLink.replace(/'/g, "\\'") : '';
             const downloadBtnHtml = item.episodeLink ? `<button class="list-download-btn" onclick="openExternalLink('${episodeLink}')">Download</button>` : '';
-
             return `
                 <div class="search-result-item" data-details='${safeDetails}'>
                     <div class="search-item-poster" data-details='${safeDetails}'>
-                        <img loading="lazy" src="${item.imageUrl}" alt="${item.title}">
+                        <img loading="lazy" decoding="async" width="100" height="145" src="${item.imageUrl}" alt="${item.title}">
                         ${item.language ? `<span class="language-tag">${item.language}</span>` : ''}
                     </div>
                     <div class="search-item-info">
@@ -309,43 +321,54 @@
             document.getElementById(pageId)?.classList.add('active'); 
             
             if (pageId === 'details-page' && data) { currentItemData = data; document.getElementById('details-poster').src = data.imageUrl; document.getElementById('details-title').innerText = data.title; document.getElementById('details-desc').innerText = data.description || 'No description available.'; document.getElementById('details-watch-btn').innerText = data.buttonText || 'Watch Now'; } 
-            if (pageId === 'item-comment-page' && data) { currentItemData = data; document.getElementById('item-comment-poster').src = data.imageUrl; document.getElementById('item-comment-title').innerText = data.title; if (userName) { document.getElementById('name-entry-container').style.display = 'none'; document.getElementById('comment-section-container').style.display = 'flex'; loadItemComments(data.id); } else { document.getElementById('name-entry-container').style.display = 'block'; document.getElementById('comment-section-container').style.display = 'none'; } } 
+            if (pageId === 'update-details-page' && data) { document.getElementById('update-details-title').innerText = data.title || 'Update Details'; document.getElementById('update-details-desc').innerText = data.description || 'No description available.'; }
             if (pageId === 'episodes-page') renderDownloadPage(); 
             if (pageId === 'saved-page') renderSavedItems(); 
-            if (pageId === 'search-page' && allData.anime.length > 0) handleSearch(true); 
+            
+            if (pageId === 'search-page') {
+                if (!fullAnimeListLoaded) {
+                    fetchAllAnimeForSearch();
+                } else {
+                    handleSearch(true);
+                }
+            } 
             updateHeader(pageId); 
             window.scrollTo(0, 0); 
         }
 
         function updateHeader(pageId) { 
-            const pageHeaders = { "search-page": "Search", "saved-page": "My List", "update-page": "Latest Updates", "profile-page": "My Profile", "details-page": "Details", "episodes-page": "Episodes", "item-comment-page": "Comments" }; 
+            const pageHeaders = { "search-page": "Search", "saved-page": "My List", "update-page": "Latest Updates", "details-page": "Details", "episodes-page": "Episodes", "update-details-page": "Update" }; 
             const title = pageHeaders[pageId]; 
             const mainHeader = document.getElementById("main-header"); 
             const secondaryHeader = document.getElementById("secondary-header"); 
             const headerContentEl = document.getElementById("secondary-header-content"); 
-            if (title) { mainHeader.style.display = "none"; secondaryHeader.style.display = "block"; let headerContent = ''; if ("details-page" === pageId && currentItemData) { let titleHtml = `<h1 class="website-name">${title}</h1>`; if (currentItemData.uploadedBy) { titleHtml = `<div class="details-title-group">${titleHtml}<span class="uploader-name">by ${currentItemData.uploadedBy}</span></div>`; } headerContent = titleHtml; if (currentItemData.type === 'anime') { const safeTitle = currentItemData.title ? currentItemData.title.replace(/'/g, "\\'") : ''; let iconsHtml = `<svg class="comment-icon-header" onclick="goToItemCommentPage()" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.839 8.839 0 01-4.09-1.078A.5.5 0 015.343 15.54l-1.7-1.7a.5.5 0 01.354-.853l2.295.215a6.002 6.002 0 007.708-7.708l-.215-2.295a.5.5 0 01.853-.354l1.7 1.7A.5.5 0 0115.923 5.91 8.839 8.839 0 0118 10zM10 7a1 1 0 100-2 1 1 0 000 2zm-2 1a1 1 0 11-2 0 1 1 0 012 0zm5 0a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"></path></svg><svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`; headerContent += `<div class="details-header-icons">${iconsHtml}</div>`; } } else { headerContent = `<h1 class="website-name">${title}</h1>`; } headerContentEl.innerHTML = headerContent; } else { mainHeader.style.display = "block"; secondaryHeader.style.display = "none"; } 
+            if (title) { mainHeader.style.display = "none"; secondaryHeader.style.display = "block"; let headerContent = ''; if ("details-page" === pageId && currentItemData) { let titleHtml = `<h1 class="website-name">${title}</h1>`; if (currentItemData.uploadedBy) { titleHtml = `<div class="details-title-group">${titleHtml}<span class="uploader-name">by ${currentItemData.uploadedBy}</span></div>`; } headerContent = titleHtml; if (currentItemData.type === 'anime') { const safeTitle = currentItemData.title ? currentItemData.title.replace(/'/g, "\\'") : ''; let iconsHtml = `<svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`; headerContent += `<div class="details-header-icons">${iconsHtml}</div>`; } } else { headerContent = `<h1 class="website-name">${title}</h1>`; } headerContentEl.innerHTML = headerContent; } else { mainHeader.style.display = "block"; secondaryHeader.style.display = "none"; } 
             document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active")); 
             document.getElementById(`nav-${pageId.split("-")[0]}`)?.classList.add("active"); 
         }
-        
-        function handleNameSubmit() { const nameInput = document.getElementById('nameInput'); if (nameInput.value.trim() !== '') { userName = nameInput.value.trim(); navigateTo('item-comment-page', currentItemData); } else { alert('Please enter your name.'); } }
-        function loadItemComments(itemId) { const commentsList = document.getElementById('comments-list'); db.collection('anime').doc(itemId).collection('comments').orderBy('timestamp', 'asc').onSnapshot(snapshot => { commentsList.innerHTML = ''; snapshot.forEach(doc => { const comment = doc.data(); const commentElement = document.createElement('div'); commentElement.classList.add('comment-item'); let authorHtml = ''; if (comment.isOwnerReply) { commentElement.classList.add('owner-reply'); authorHtml = `<strong>Owner 👑:</strong>`; } else { authorHtml = `<strong>${comment.name || 'Anonymous'}:</strong>`; } commentElement.innerHTML = `<p>${authorHtml} ${comment.text}</p>`; commentsList.appendChild(commentElement); }); commentsList.scrollTop = commentsList.scrollHeight; }, err => console.error("Error loading comments: ", err)); }
-        function sendItemComment() { const commentInput = document.getElementById('commentInput'); const commentText = commentInput.value.trim(); if (commentText !== '' && userName && currentItemData) { db.collection('anime').doc(currentItemData.id).collection('comments').add({ name: userName, text: commentText, timestamp: firebase.firestore.FieldValue.serverTimestamp() }).then(() => commentInput.value = '').catch(err => console.error("Error adding comment: ", err)); } }
-        function goToItemCommentPage() { if (currentItemData) navigateTo('item-comment-page', currentItemData); }
-        function createAnimeCard(item) { const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : ''; const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;'); return `<div class="anime-card" data-details='${safeDetails}'><div class="anime-card-poster"><img loading="lazy" src="${item.imageUrl}" alt="${item.title}"> ${langTag}</div><p>${item.title}</p></div>`; }
+        function createAnimeCard(item) { const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : ''; const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;'); 
+            return `<div class="anime-card" data-details='${safeDetails}'><div class="anime-card-poster"><img loading="lazy" decoding="async" width="110" height="155" src="${item.imageUrl}" alt="${item.title}"> ${langTag}</div><p>${item.title}</p></div>`; 
+        }
         function applyPrimaryColor(color) { if (color) { document.documentElement.style.setProperty('--primary-red', color); } }
         function applyBackground(url) { if (url) { document.body.style.backgroundImage = `url('${url}')`; } }
-        
-        function applyWebsiteName(name) {
-            if (name) {
-                const nameElement = document.querySelector('#main-header .website-name');
-                if (nameElement) {
-                    nameElement.innerHTML = `${name}<span>Buzz</span>`;
-                }
-            }
+        function applyWebsiteName(name) { if (name) { const nameElement = document.querySelector('#main-header .website-name'); if (nameElement) { nameElement.innerHTML = `${name}<span>Buzz</span>`; } } }
+        function renderUpdates(updatesList) { 
+            const container = document.getElementById('update-list-container'); 
+            if (!container) return; 
+            if (updatesList.length === 0) { 
+                container.innerHTML = `<div id="no-results"><p>No updates available right now.</p></div>`; 
+                return; 
+            } 
+            container.innerHTML = updatesList.map(update => {
+                const safeDetails = JSON.stringify({...update, type: 'update'}).replace(/'/g, '&apos;');
+                return `<div class="update-card" data-details='${safeDetails}'>
+                            <img src="${update.bannerUrl}" alt="Update Banner" class="update-banner" loading="lazy" decoding="async">
+                            <div class="update-description">
+                                <p>${update.description ? update.description.replace(/\n/g, '<br>') : 'No description.'}</p>
+                            </div>
+                        </div>`;
+            }).join(''); 
         }
-
-        function renderUpdates(updatesList) { const container = document.getElementById('update-list-container'); if (!container) return; if (updatesList.length === 0) { container.innerHTML = `<div id="no-results"><p>No updates available right now.</p></div>`; return; } container.innerHTML = updatesList.map(update => `<div class="update-card"><img src="${update.bannerUrl}" alt="Update Banner" class="update-banner" loading="lazy"><div class="update-description"><p>${update.description ? update.description.replace(/\n/g, '<br>') : 'No description.'}</p></div></div>`).join(''); }
         function renderBanners(banners) { const track = document.getElementById('slider-track'); if (!track) return; if (banners.length === 0) { track.innerHTML = ""; return; } track.innerHTML = banners.map(banner => { const bannerData = { ...banner, type: 'banner', id: banner.id || banner.title.replace(/\s+/g, '-') }; const styleAttribute = banner.imageUrl ? `style="background-image: url('${banner.imageUrl}');"` : ''; const safeDetails = JSON.stringify(bannerData).replace(/'/g, '&apos;'); return `<div class="hero-slide" ${styleAttribute}><h3 class="hero-title">${banner.title}</h3><button class="watch-now-btn" data-details='${safeDetails}'><span>${banner.buttonText || 'Watch Now'}</span><span>&gt;</span></button></div>`; }).join(''); if (!sliderInitialized) { initSlider(); sliderInitialized = true; } }
         function renderHomePage(animeList) { const container = document.getElementById("home-rows"); if (!container) return; savedItems = JSON.parse(localStorage.getItem('animeBuzzSaved')) || []; const categories = animeList.reduce((acc, anime) => { (acc[anime.category || "Trending"] = acc[anime.category || "Trending"] || []).push(anime); return acc; }, {}); container.innerHTML = Object.entries(categories).map(([category, items]) => `<section class="anime-row"><h2>${category}</h2><div class="row-content">${items.map(createAnimeCard).join('')}</div></section>`).join(''); }
         function handleSearch(showAll = false) { const term = document.getElementById("searchInput").value.toLowerCase(); const resultsWrapper = document.getElementById("search-results-wrapper"); const listToSearch = allData.anime; if (showAll && !term) { resultsWrapper.innerHTML = listToSearch.map(createSearchResultItem).join(''); return; } const filtered = listToSearch.filter(e => e.title.toLowerCase().includes(term)); resultsWrapper.innerHTML = filtered.length ? filtered.map(createSearchResultItem).join('') : `<div id="no-results"><p>No results found</p></div>`; }
@@ -357,4 +380,4 @@
         function initSlider() { const container = document.getElementById('banner-container'); const track = document.getElementById('slider-track'); if (!container || !track) return; let slides = Array.from(track.children); if (slides.length <= 1) return; const slideCount = slides.length; const transitionTime = 400; const autoSlideInterval = 3000; track.style.setProperty('--transition-time', `${transitionTime}ms`); const firstClone = slides[0].cloneNode(true); firstClone.classList.add('clone'); const lastClone = slides[slideCount - 1].cloneNode(true); lastClone.classList.add('clone'); track.appendChild(firstClone); track.insertBefore(lastClone, slides[0]); let currentIndex = 1; let isDragging = false; let startPos = 0; let currentTranslate = 0; let prevTranslate = 0; let autoSlideTimer; function getPositionX(event) { return event.touches ? event.touches[0].clientX : event.pageX; } function setPositionByIndex() { currentTranslate = currentIndex * -container.offsetWidth; track.style.transform = `translateX(${currentTranslate}px)`; } function shiftSlides() { if (currentIndex <= 0) { track.style.transition = 'none'; currentIndex = slideCount; setPositionByIndex(); } else if (currentIndex >= slideCount + 1) { track.style.transition = 'none'; currentIndex = 1; setPositionByIndex(); } setTimeout(() => { track.style.transition = `transform ${transitionTime}ms ease-out`; }, 50); } function startAutoSlide() { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => { currentIndex++; setPositionByIndex(); if (currentIndex >= slideCount + 1) { setTimeout(shiftSlides, transitionTime); } }, autoSlideInterval); } function dragStart(event) { clearInterval(autoSlideTimer); isDragging = true; startPos = getPositionX(event); prevTranslate = currentTranslate; track.style.transition = 'none'; } function dragMove(event) { if (isDragging) { const currentPosition = getPositionX(event); currentTranslate = prevTranslate + currentPosition - startPos; track.style.transform = `translateX(${currentTranslate}px)`; } } function dragEnd() { if (!isDragging) return; isDragging = false; const movedBy = currentTranslate - prevTranslate; if (movedBy < -100) currentIndex++; else if (movedBy > 100) currentIndex--; track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); shiftSlides(); startAutoSlide(); } container.addEventListener('mousedown', dragStart); container.addEventListener('touchstart', dragStart, { passive: true }); container.addEventListener('mouseup', dragEnd); container.addEventListener('touchend', dragEnd); container.addEventListener('mouseleave', dragEnd); container.addEventListener('mousemove', dragMove); container.addEventListener('touchmove', dragMove, { passive: true }); window.addEventListener('resize', setPositionByIndex); track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); startAutoSlide(); }
     </script>
 </body>
-  </html>
+    </html>
