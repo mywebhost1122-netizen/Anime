@@ -172,6 +172,10 @@
         let initialDataRendered = { banners: false, anime: false };
         let fullAnimeListLoaded = false; 
 
+        // ===== INFINITE SCROLL KE LIYE NAYE VARIABLES =====
+        let lastVisibleAnime = null; // Aakhri dikhne wala anime
+        let isLoadingMore = false; // Check karega ki data load ho raha hai ya nahi
+
         function revealApp() {
             document.getElementById('loader-container').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'block';
@@ -215,6 +219,17 @@
         document.addEventListener('DOMContentLoaded', () => {
             userName = localStorage.getItem('animeBuzzUserName');
             initializeApp();
+
+            // ===== INFINITE SCROLL KE LIYE EVENT LISTENER =====
+            window.addEventListener('scroll', () => {
+                // Agar user home page par hai, neeche tak scroll kar chuka hai, aur data load nahi ho raha hai
+                if (document.getElementById('home-page').classList.contains('active') && 
+                    (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200 && 
+                    !isLoadingMore) {
+                    loadMoreAnime();
+                }
+            });
+
             document.body.addEventListener('click', (event) => { 
                 const clickableItem = event.target.closest('.search-item-poster, .search-item-title, .anime-card, .update-card'); 
                 if (clickableItem && clickableItem.dataset.details) { 
@@ -243,8 +258,12 @@
                     }
                 }, err => console.error("Error fetching site config:", err));
 
+                // Shuru mein sirf 40 anime load honge
                 db.collection('anime').orderBy("title").limit(40).onSnapshot(snapshot => {
-                    const initialAnime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const docs = snapshot.docs;
+                    lastVisibleAnime = docs[docs.length - 1]; // Aakhri anime ko save kar lo
+                    
+                    const initialAnime = docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     if (!fullAnimeListLoaded) {
                         allData.anime = initialAnime;
                     }
@@ -272,6 +291,31 @@
             }
         }
 
+        // ===== INFINITE SCROLL KE LIYE NAYA FUNCTION =====
+        async function loadMoreAnime() {
+            if (isLoadingMore || !lastVisibleAnime) return; // Agar data load ho raha hai ya aakhri anime nahi hai, to kuch na karo
+            isLoadingMore = true; // Loading shuru
+
+            try {
+                const snapshot = await db.collection('anime')
+                    .orderBy("title")
+                    .startAfter(lastVisibleAnime) // Aakhri anime se aage shuru karo
+                    .limit(20) // Agle 20 anime lao
+                    .get();
+
+                const docs = snapshot.docs;
+                if (docs.length > 0) {
+                    lastVisibleAnime = docs[docs.length - 1]; // Naye aakhri anime ko save karo
+                    const newAnime = docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    allData.anime = [...allData.anime, ...newAnime]; // Naye anime ko purani list mein jodo
+                    renderHomePage(allData.anime); // Poori list ko dobara render karo
+                }
+            } catch (err) {
+                console.error("Error loading more anime:", err);
+            }
+            isLoadingMore = false; // Loading khatm
+        }
+
         async function fetchAllAnimeForSearch() {
             if (fullAnimeListLoaded) return;
             try {
@@ -290,29 +334,7 @@
                 renderUpdates(updates);
             }, err => console.error("Error fetching updates:", err));
         }
-
-        function createSearchResultItem(item) {
-            const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;');
-            const ratingHtml = item.rating ? `<div class="rating-display">⭐ ${item.rating}</div>` : '';
-            const episodeLink = item.episodeLink ? item.episodeLink.replace(/'/g, "\\'") : '';
-            const downloadBtnHtml = item.episodeLink ? `<button class="list-download-btn" onclick="openExternalLink('${episodeLink}')">Download</button>` : '';
-            return `
-                <div class="search-result-item" data-details='${safeDetails}'>
-                    <div class="search-item-poster" data-details='${safeDetails}'>
-                        <img loading="lazy" decoding="async" width="100" height="145" src="${item.imageUrl}" alt="${item.title}">
-                        ${item.language ? `<span class="language-tag">${item.language}</span>` : ''}
-                    </div>
-                    <div class="search-item-info">
-                        <div class="search-item-header">
-                            <div class="search-item-title" data-details='${safeDetails}'>${item.title}</div>
-                            ${ratingHtml}
-                        </div>
-                        <div class="search-item-desc">${item.description || 'No description available.'}</div>
-                        ${downloadBtnHtml}
-                    </div>
-                </div>`;
-        }
-
+        
         function navigateTo(pageId, data = null) { 
             if (pageHistory[pageHistory.length - 1] !== pageId || data) { 
                 if (pageHistory[pageHistory.length - 1] !== pageId) pageHistory.push(pageId); 
@@ -336,39 +358,14 @@
             window.scrollTo(0, 0); 
         }
 
-        function updateHeader(pageId) { 
-            const pageHeaders = { "search-page": "Search", "saved-page": "My List", "update-page": "Latest Updates", "details-page": "Details", "episodes-page": "Episodes", "update-details-page": "Update" }; 
-            const title = pageHeaders[pageId]; 
-            const mainHeader = document.getElementById("main-header"); 
-            const secondaryHeader = document.getElementById("secondary-header"); 
-            const headerContentEl = document.getElementById("secondary-header-content"); 
-            if (title) { mainHeader.style.display = "none"; secondaryHeader.style.display = "block"; let headerContent = ''; if ("details-page" === pageId && currentItemData) { let titleHtml = `<h1 class="website-name">${title}</h1>`; if (currentItemData.uploadedBy) { titleHtml = `<div class="details-title-group">${titleHtml}<span class="uploader-name">by ${currentItemData.uploadedBy}</span></div>`; } headerContent = titleHtml; if (currentItemData.type === 'anime') { const safeTitle = currentItemData.title ? currentItemData.title.replace(/'/g, "\\'") : ''; let iconsHtml = `<svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`; headerContent += `<div class="details-header-icons">${iconsHtml}</div>`; } } else { headerContent = `<h1 class="website-name">${title}</h1>`; } headerContentEl.innerHTML = headerContent; } else { mainHeader.style.display = "block"; secondaryHeader.style.display = "none"; } 
-            document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active")); 
-            document.getElementById(`nav-${pageId.split("-")[0]}`)?.classList.add("active"); 
-        }
-        function createAnimeCard(item) { const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : ''; const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;'); 
-            return `<div class="anime-card" data-details='${safeDetails}'><div class="anime-card-poster"><img loading="lazy" decoding="async" width="110" height="155" src="${item.imageUrl}" alt="${item.title}"> ${langTag}</div><p>${item.title}</p></div>`; 
-        }
+        // (The rest of the JS functions are omitted for brevity as they are unchanged)
+        function createSearchResultItem(item) { const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;'); const ratingHtml = item.rating ? `<div class="rating-display">⭐ ${item.rating}</div>` : ''; const episodeLink = item.episodeLink ? item.episodeLink.replace(/'/g, "\\'") : ''; const downloadBtnHtml = item.episodeLink ? `<button class="list-download-btn" onclick="openExternalLink('${episodeLink}')">Download</button>` : ''; return ` <div class="search-result-item" data-details='${safeDetails}'> <div class="search-item-poster" data-details='${safeDetails}'> <img loading="lazy" decoding="async" width="100" height="145" src="${item.imageUrl}" alt="${item.title}"> ${item.language ? `<span class="language-tag">${item.language}</span>` : ''} </div> <div class="search-item-info"> <div class="search-item-header"> <div class="search-item-title" data-details='${safeDetails}'>${item.title}</div> ${ratingHtml} </div> <div class="search-item-desc">${item.description || 'No description available.'}</div> ${downloadBtnHtml} </div> </div>`; }
+        function updateHeader(pageId) { const pageHeaders = { "search-page": "Search", "saved-page": "My List", "update-page": "Latest Updates", "details-page": "Details", "episodes-page": "Episodes", "update-details-page": "Update" }; const title = pageHeaders[pageId]; const mainHeader = document.getElementById("main-header"); const secondaryHeader = document.getElementById("secondary-header"); const headerContentEl = document.getElementById("secondary-header-content"); if (title) { mainHeader.style.display = "none"; secondaryHeader.style.display = "block"; let headerContent = ''; if ("details-page" === pageId && currentItemData) { let titleHtml = `<h1 class="website-name">${title}</h1>`; if (currentItemData.uploadedBy) { titleHtml = `<div class="details-title-group">${titleHtml}<span class="uploader-name">by ${currentItemData.uploadedBy}</span></div>`; } headerContent = titleHtml; if (currentItemData.type === 'anime') { const safeTitle = currentItemData.title ? currentItemData.title.replace(/'/g, "\\'") : ''; let iconsHtml = `<svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`; headerContent += `<div class="details-header-icons">${iconsHtml}</div>`; } } else { headerContent = `<h1 class="website-name">${title}</h1>`; } headerContentEl.innerHTML = headerContent; } else { mainHeader.style.display = "block"; secondaryHeader.style.display = "none"; } document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active")); document.getElementById(`nav-${pageId.split("-")[0]}`)?.classList.add("active"); }
+        function createAnimeCard(item) { const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : ''; const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;');  return `<div class="anime-card" data-details='${safeDetails}'><div class="anime-card-poster"><img loading="lazy" decoding="async" width="110" height="155" src="${item.imageUrl}" alt="${item.title}"> ${langTag}</div><p>${item.title}</p></div>`; }
         function applyPrimaryColor(color) { if (color) { document.documentElement.style.setProperty('--primary-red', color); } }
         function applyBackground(url) { if (url) { document.body.style.backgroundImage = `url('${url}')`; } }
         function applyWebsiteName(name) { if (name) { const nameElement = document.querySelector('#main-header .website-name'); if (nameElement) { nameElement.innerHTML = `${name}<span>Buzz</span>`; } } }
-        function renderUpdates(updatesList) { 
-            const container = document.getElementById('update-list-container'); 
-            if (!container) return; 
-            if (updatesList.length === 0) { 
-                container.innerHTML = `<div id="no-results"><p>No updates available right now.</p></div>`; 
-                return; 
-            } 
-            container.innerHTML = updatesList.map(update => {
-                const safeDetails = JSON.stringify({...update, type: 'update'}).replace(/'/g, '&apos;');
-                return `<div class="update-card" data-details='${safeDetails}'>
-                            <img src="${update.bannerUrl}" alt="Update Banner" class="update-banner" loading="lazy" decoding="async">
-                            <div class="update-description">
-                                <p>${update.description ? update.description.replace(/\n/g, '<br>') : 'No description.'}</p>
-                            </div>
-                        </div>`;
-            }).join(''); 
-        }
+        function renderUpdates(updatesList) { const container = document.getElementById('update-list-container'); if (!container) return; if (updatesList.length === 0) { container.innerHTML = `<div id="no-results"><p>No updates available right now.</p></div>`; return; } container.innerHTML = updatesList.map(update => { const safeDetails = JSON.stringify({...update, type: 'update'}).replace(/'/g, '&apos;'); return `<div class="update-card" data-details='${safeDetails}'> <img src="${update.bannerUrl}" alt="Update Banner" class="update-banner" loading="lazy" decoding="async"> <div class="update-description"> <p>${update.description ? update.description.replace(/\n/g, '<br>') : 'No description.'}</p> </div> </div>`; }).join(''); }
         function renderBanners(banners) { const track = document.getElementById('slider-track'); if (!track) return; if (banners.length === 0) { track.innerHTML = ""; return; } track.innerHTML = banners.map(banner => { const bannerData = { ...banner, type: 'banner', id: banner.id || banner.title.replace(/\s+/g, '-') }; const styleAttribute = banner.imageUrl ? `style="background-image: url('${banner.imageUrl}');"` : ''; const safeDetails = JSON.stringify(bannerData).replace(/'/g, '&apos;'); return `<div class="hero-slide" ${styleAttribute}><h3 class="hero-title">${banner.title}</h3><button class="watch-now-btn" data-details='${safeDetails}'><span>${banner.buttonText || 'Watch Now'}</span><span>&gt;</span></button></div>`; }).join(''); if (!sliderInitialized) { initSlider(); sliderInitialized = true; } }
         function renderHomePage(animeList) { const container = document.getElementById("home-rows"); if (!container) return; savedItems = JSON.parse(localStorage.getItem('animeBuzzSaved')) || []; const categories = animeList.reduce((acc, anime) => { (acc[anime.category || "Trending"] = acc[anime.category || "Trending"] || []).push(anime); return acc; }, {}); container.innerHTML = Object.entries(categories).map(([category, items]) => `<section class="anime-row"><h2>${category}</h2><div class="row-content">${items.map(createAnimeCard).join('')}</div></section>`).join(''); }
         function handleSearch(showAll = false) { const term = document.getElementById("searchInput").value.toLowerCase(); const resultsWrapper = document.getElementById("search-results-wrapper"); const listToSearch = allData.anime; if (showAll && !term) { resultsWrapper.innerHTML = listToSearch.map(createSearchResultItem).join(''); return; } const filtered = listToSearch.filter(e => e.title.toLowerCase().includes(term)); resultsWrapper.innerHTML = filtered.length ? filtered.map(createSearchResultItem).join('') : `<div id="no-results"><p>No results found</p></div>`; }
