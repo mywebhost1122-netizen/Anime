@@ -42,6 +42,20 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         #user-stats, #anime-stats { text-align: center; margin-bottom: 20px; font-size: 18px; color: #ccc; }
+        
+        /* ===== SEARCH BAR KE LIYE STYLE ===== */
+        .search-container {
+            margin-bottom: 20px;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -53,9 +67,14 @@
             <div class="container">
                 <header>
                     <h1>Anime</h1>
-                    <!-- ===== यहाँ पर Total Anime की संख्या दिखाने के लिए div जोड़ा गया है ===== -->
                     <div id="anime-stats"></div>
                 </header>
+                
+                <!-- ===== SEARCH BAR YAHA JODA GAYA HAI ===== -->
+                <div class="search-container">
+                    <input type="text" id="searchInput" onkeyup="filterAnime()" placeholder="Search for anime...">
+                </div>
+                
                 <div class="list-section">
                     <div id="anime-list"></div>
                 </div>
@@ -179,7 +198,7 @@
         mainForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             loader.style.display = 'flex';
-            const collection = 'anime'; // Hardcoded to 'anime' as form is for anime
+            const collection = 'anime';
             const docId = document.getElementById('docId').value;
             let data = {
                 title: document.getElementById('title').value,
@@ -221,7 +240,6 @@
             try { 
                 const snapshot = await db.collection(collectionName).orderBy("title").get(); 
                 
-                // ===== यहाँ पर Total Anime की गिनती को अपडेट करने का कोड जोड़ा गया है =====
                 if (collectionName === 'anime') {
                     document.getElementById('anime-stats').innerHTML = `Total Anime: ${snapshot.size}`;
                 }
@@ -237,6 +255,24 @@
                 } 
                 listEl.innerHTML = html; 
             } catch (e) { listEl.innerHTML = `<p>Error loading data.</p>`; } 
+        }
+
+        // ===== SEARCH FUNCTION YAHA JODA GAYA HAI =====
+        function filterAnime() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const list = document.getElementById('anime-list');
+            const items = list.getElementsByClassName('list-item');
+
+            for (let i = 0; i < items.length; i++) {
+                const span = items[i].getElementsByTagName("span")[0];
+                const txtValue = span.textContent || span.innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    items[i].style.display = "flex";
+                } else {
+                    items[i].style.display = "none";
+                }
+            }
         }
 
         function showAddChoice() {
@@ -281,4 +317,4 @@
         document.addEventListener('DOMContentLoaded', checkInitialSetup);
     </script>
 </body>
- </html>
+    </html>
