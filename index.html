@@ -7,9 +7,9 @@
     <style>
         :root { --primary-red: #E50914; --background-color: #141414; --text-color: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: var(--background-color); 
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--background-color);
             color: var(--text-color);
             background-size: cover;
             background-position: center;
@@ -105,6 +105,21 @@
         .update-card { background-color: #2a2a2a; border-radius: 10px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer; }
         .update-banner { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background-color: #333; }
         .update-description { padding: 15px; font-size: 14px; line-height: 1.6; }
+        
+        /* Join Group Chat بٹن کے لیے نیا CSS */
+        .join-chat-btn {
+            background-color: var(--primary-red);
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap; /* اس بات کو یقینی بناتا ہے کہ متن ایک لائن میں رہے */
+        }
+
         @media (min-width: 768px) {
             .row-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; overflow-x: hidden; }
             .anime-card { width: auto; }
@@ -360,7 +375,51 @@
 
         // (The rest of the JS functions are omitted for brevity as they are unchanged)
         function createSearchResultItem(item) { const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;'); const ratingHtml = item.rating ? `<div class="rating-display">⭐ ${item.rating}</div>` : ''; const episodeLink = item.episodeLink ? item.episodeLink.replace(/'/g, "\\'") : ''; const downloadBtnHtml = item.episodeLink ? `<button class="list-download-btn" onclick="openExternalLink('${episodeLink}')">Download</button>` : ''; return ` <div class="search-result-item" data-details='${safeDetails}'> <div class="search-item-poster" data-details='${safeDetails}'> <img loading="lazy" decoding="async" width="100" height="145" src="${item.imageUrl}" alt="${item.title}"> ${item.language ? `<span class="language-tag">${item.language}</span>` : ''} </div> <div class="search-item-info"> <div class="search-item-header"> <div class="search-item-title" data-details='${safeDetails}'>${item.title}</div> ${ratingHtml} </div> <div class="search-item-desc">${item.description || 'No description available.'}</div> ${downloadBtnHtml} </div> </div>`; }
-        function updateHeader(pageId) { const pageHeaders = { "search-page": "Search", "saved-page": "My List", "update-page": "Latest Updates", "details-page": "Details", "episodes-page": "Episodes", "update-details-page": "Update" }; const title = pageHeaders[pageId]; const mainHeader = document.getElementById("main-header"); const secondaryHeader = document.getElementById("secondary-header"); const headerContentEl = document.getElementById("secondary-header-content"); if (title) { mainHeader.style.display = "none"; secondaryHeader.style.display = "block"; let headerContent = ''; if ("details-page" === pageId && currentItemData) { let titleHtml = `<h1 class="website-name">${title}</h1>`; if (currentItemData.uploadedBy) { titleHtml = `<div class="details-title-group">${titleHtml}<span class="uploader-name">by ${currentItemData.uploadedBy}</span></div>`; } headerContent = titleHtml; if (currentItemData.type === 'anime') { const safeTitle = currentItemData.title ? currentItemData.title.replace(/'/g, "\\'") : ''; let iconsHtml = `<svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`; headerContent += `<div class="details-header-icons">${iconsHtml}</div>`; } } else { headerContent = `<h1 class="website-name">${title}</h1>`; } headerContentEl.innerHTML = headerContent; } else { mainHeader.style.display = "block"; secondaryHeader.style.display = "none"; } document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active")); document.getElementById(`nav-${pageId.split("-")[0]}`)?.classList.add("active"); }
+        
+        // ---=== JAVASCRIPT میں تبدیلی یہاں ہے ===---
+        function updateHeader(pageId) { 
+            const pageHeaders = { "search-page": "Search", "saved-page": "My List", "update-page": "Latest Updates", "details-page": "Details", "episodes-page": "Episodes", "update-details-page": "Update" }; 
+            const title = pageHeaders[pageId]; 
+            const mainHeader = document.getElementById("main-header"); 
+            const secondaryHeader = document.getElementById("secondary-header"); 
+            const headerContentEl = document.getElementById("secondary-header-content"); 
+            
+            if (title) { 
+                mainHeader.style.display = "none"; 
+                secondaryHeader.style.display = "block"; 
+                let headerContent = ''; 
+                
+                if ("details-page" === pageId && currentItemData) { 
+                    let titleHtml = `<h1 class="website-name">${title}</h1>`; 
+                    if (currentItemData.uploadedBy) { 
+                        titleHtml = `<div class="details-title-group">${titleHtml}<span class="uploader-name">by ${currentItemData.uploadedBy}</span></div>`; 
+                    } 
+                    headerContent = titleHtml; 
+                    if (currentItemData.type === 'anime') { 
+                        const safeTitle = currentItemData.title ? currentItemData.title.replace(/'/g, "\\'") : ''; 
+                        let iconsHtml = `<svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`; 
+                        headerContent += `<div class="details-header-icons">${iconsHtml}</div>`; 
+                    } 
+                } else if (pageId === 'update-details-page') {
+                    // Update Details پیج کے لیے نیا ہیڈر مواد
+                    const telegramLink = 'https://t.me/your_telegram_group_link'; // اپنے ٹیلیگرام گروپ کا لنک یہاں ڈالیں
+                    headerContent = `
+                        <h1 class="website-name">${title}</h1>
+                        <a href="${telegramLink}" target="_blank" class="join-chat-btn">Join Group Chat</a>
+                    `;
+                } else { 
+                    headerContent = `<h1 class="website-name">${title}</h1>`; 
+                } 
+                headerContentEl.innerHTML = headerContent; 
+            } else { 
+                mainHeader.style.display = "block"; 
+                secondaryHeader.style.display = "none"; 
+            } 
+            document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active")); 
+            document.getElementById(`nav-${pageId.split("-")[0]}`)?.classList.add("active"); 
+        }
+        // ---=== تبدیلی ختم ===---
+
         function createAnimeCard(item) { const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : ''; const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;');  return `<div class="anime-card" data-details='${safeDetails}'><div class="anime-card-poster"><img loading="lazy" decoding="async" width="110" height="155" src="${item.imageUrl}" alt="${item.title}"> ${langTag}</div><p>${item.title}</p></div>`; }
         function applyPrimaryColor(color) { if (color) { document.documentElement.style.setProperty('--primary-red', color); } }
         function applyBackground(url) { if (url) { document.body.style.backgroundImage = `url('${url}')`; } }
@@ -377,4 +436,4 @@
         function initSlider() { const container = document.getElementById('banner-container'); const track = document.getElementById('slider-track'); if (!container || !track) return; let slides = Array.from(track.children); if (slides.length <= 1) return; const slideCount = slides.length; const transitionTime = 400; const autoSlideInterval = 3000; track.style.setProperty('--transition-time', `${transitionTime}ms`); const firstClone = slides[0].cloneNode(true); firstClone.classList.add('clone'); const lastClone = slides[slideCount - 1].cloneNode(true); lastClone.classList.add('clone'); track.appendChild(firstClone); track.insertBefore(lastClone, slides[0]); let currentIndex = 1; let isDragging = false; let startPos = 0; let currentTranslate = 0; let prevTranslate = 0; let autoSlideTimer; function getPositionX(event) { return event.touches ? event.touches[0].clientX : event.pageX; } function setPositionByIndex() { currentTranslate = currentIndex * -container.offsetWidth; track.style.transform = `translateX(${currentTranslate}px)`; } function shiftSlides() { if (currentIndex <= 0) { track.style.transition = 'none'; currentIndex = slideCount; setPositionByIndex(); } else if (currentIndex >= slideCount + 1) { track.style.transition = 'none'; currentIndex = 1; setPositionByIndex(); } setTimeout(() => { track.style.transition = `transform ${transitionTime}ms ease-out`; }, 50); } function startAutoSlide() { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => { currentIndex++; setPositionByIndex(); if (currentIndex >= slideCount + 1) { setTimeout(shiftSlides, transitionTime); } }, autoSlideInterval); } function dragStart(event) { clearInterval(autoSlideTimer); isDragging = true; startPos = getPositionX(event); prevTranslate = currentTranslate; track.style.transition = 'none'; } function dragMove(event) { if (isDragging) { const currentPosition = getPositionX(event); currentTranslate = prevTranslate + currentPosition - startPos; track.style.transform = `translateX(${currentTranslate}px)`; } } function dragEnd() { if (!isDragging) return; isDragging = false; const movedBy = currentTranslate - prevTranslate; if (movedBy < -100) currentIndex++; else if (movedBy > 100) currentIndex--; track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); shiftSlides(); startAutoSlide(); } container.addEventListener('mousedown', dragStart); container.addEventListener('touchstart', dragStart, { passive: true }); container.addEventListener('mouseup', dragEnd); container.addEventListener('touchend', dragEnd); container.addEventListener('mouseleave', dragEnd); container.addEventListener('mousemove', dragMove); container.addEventListener('touchmove', dragMove, { passive: true }); window.addEventListener('resize', setPositionByIndex); track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); startAutoSlide(); }
     </script>
 </body>
-</html>
+  </html>
