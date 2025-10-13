@@ -116,11 +116,46 @@
         .row-content { display: flex; overflow-x: auto; gap: 8px; padding: 0 20px 10px 20px; scrollbar-width: none; }
         .row-content::-webkit-scrollbar { display: none; }
         
-        .anime-card { flex-shrink: 0; width: 120px; cursor: pointer; background-color: #1a1a1a; border-radius: 0; overflow: hidden; display: flex; flex-direction: column; }
-        .anime-card-poster { position: relative; width: 100%; height: 170px; }
-        .anime-card img { width: 100%; height: 100%; object-fit: cover; display: block; background-color: #333; }
-        .card-title-box { background-color: #1a1a1a; padding: 8px; width: 100%; height: 38px; display: flex; align-items: center; }
-        .card-title-box p { font-size: 13px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; margin: 0; width: 100%; }
+        .anime-card {
+            flex-shrink: 0;
+            width: 120px;
+            cursor: pointer;
+            background-color: #1a1a1a;
+            border-radius: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .anime-card-poster {
+            position: relative;
+            width: 100%;
+            height: 170px;
+        }
+        .anime-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            background-color: #333;
+        }
+        .card-title-box {
+            background-color: #1a1a1a;
+            padding: 8px;
+            width: 100%;
+            height: 38px;
+            display: flex;
+            align-items: center;
+        }
+        .card-title-box p {
+            font-size: 13px;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #ddd;
+            margin: 0;
+            width: 100%;
+        }
 
         .language-tag { position: absolute; top: 6px; right: 6px; background-color: rgba(20, 20, 20, 0.8); padding: 3px 7px; border-radius: 4px; font-size: 11px; font-weight: bold; z-index: 2; }
         #no-results { text-align: center; padding: 50px 20px; color: #888; }
@@ -162,69 +197,6 @@
         .static-page-content p { color: #ccc; line-height: 1.7; margin-bottom: 15px; }
         .static-page-content ul { list-style: none; padding-left: 5px; margin-bottom: 25px; }
         .static-page-content li { color: #ccc; margin-bottom: 8px; }
-
-        /* <!-- === YAHAN BADLAAV KIYA GAYA HAI (CSS) === --> */
-        #butterfly-container {
-            position: absolute;
-            width: 75px;
-            height: 75px;
-            cursor: pointer;
-            z-index: 10;
-            opacity: 0;
-            animation: fly-path 3s ease-in-out 0.5s forwards;
-            transform-style: preserve-3d;
-            perspective: 800px;
-        }
-        #butterfly-container.hiding {
-            animation: fly-away 1s ease-in forwards;
-            pointer-events: none;
-        }
-        .butterfly {
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            animation: hover-effect 2s infinite alternate ease-in-out 3.5s;
-        }
-        .butterfly-part {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 5px 15px rgba(171, 104, 255, 0.5));
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-        }
-        .left-wing {
-            animation: flap-left 0.4s infinite alternate ease-in-out;
-            transform-origin: right center;
-        }
-        .right-wing {
-            animation: flap-right 0.4s infinite alternate ease-in-out;
-            transform-origin: left center;
-        }
-        @keyframes fly-path {
-            0% { opacity: 1; top: -100px; left: -100px; transform: scale(0.5) rotate(45deg); }
-            50% { opacity: 1; top: 100px; left: 80%; transform: scale(1.2) rotate(-20deg); }
-            100% { opacity: 1; top: 58px; left: calc(100% - 105px); transform: scale(1) rotate(15deg); }
-        }
-        @keyframes hover-effect {
-            from { transform: translateY(0px) rotate(15deg); }
-            to { transform: translateY(-6px) rotate(10deg); }
-        }
-        @keyframes flap-left {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(70deg); }
-        }
-        @keyframes flap-right {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(-70deg); }
-        }
-        @keyframes fly-away {
-            0% { opacity: 1; transform: scale(1) rotate(15deg); }
-            30% { opacity: 1; transform: scale(1.2) rotate(0deg); }
-            100% { opacity: 0; top: -150px; left: 120%; transform: scale(0.3) rotate(120deg); }
-        }
-        /* <!-- === BADLAAV KHATAM (CSS) === --> */
 
         @media (min-width: 768px) {
             .row-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; overflow-x: hidden; }
@@ -311,15 +283,6 @@
                         <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"></path></svg>
                     </div>
                 </div>
-                <!-- === YAHAN BADLAAV KIYA GAYA HAI (HTML) === -->
-                <div id="butterfly-container" onclick="hideButterfly(this)">
-                    <div class="butterfly">
-                        <img class="butterfly-part left-wing" src="https://i.postimg.cc/tJc7g7j1/wing-left.png" alt="">
-                        <img class="butterfly-part body" src="https://i.postimg.cc/8c8c4N3c/body.png" alt="">
-                        <img class="butterfly-part right-wing" src="https://i.postimg.cc/zX7fyB7C/wing-right.png" alt="">
-                    </div>
-                </div>
-                <!-- === BADLAAV KHATAM (HTML) === -->
             </div>
             <div id="search-results-wrapper"></div>
         </div>
@@ -598,17 +561,17 @@
                         document.getElementById("home-rows").innerHTML = `<p style="text-align:center; color:#888;">Failed to load anime.</p>`;
                     });
 
-                db.collection('animeBanners').onSnapshot(snapshot => {
-                    allData.animeBanners = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderBanners(allData.animeBanners);
-                    if (!initialDataRendered.banners) {
-                        initialDataRendered.banners = true;
-                        checkInitialRenderComplete();
-                    }
-                }, err => console.error("Error fetching banners:", err));
+                db.collection('animeBanners').get()
+                    .then(snapshot => {
+                        allData.animeBanners = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderBanners(allData.animeBanners);
+                        if (!initialDataRendered.banners) {
+                            initialDataRendered.banners = true;
+                            checkInitialRenderComplete();
+                        }
+                    });
                 
                 fetchFullListAndCount();
-                setupRealtimeListeners();
             } catch (err) {
                 console.error("Error initializing app:", err);
                 document.getElementById('loader-text').innerHTML = "<p>Failed to load data. Please refresh.</p>";
@@ -644,13 +607,6 @@
             }
         }
         
-        function setupRealtimeListeners() {
-            db.collection('updates').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-                const updates = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderUpdates(updates);
-            }, err => console.error("Error fetching updates:", err));
-        }
-        
         function navigateTo(pageId, data = null) {
             if (pageHistory[pageHistory.length - 1] !== pageId || data) {
                  if (pageHistory[pageHistory.length - 1] !== pageId) pageHistory.push(pageId);
@@ -681,10 +637,6 @@
                 fetchAllAnimeForSearch().then(() => {
                     handleSearch(true);
                 });
-                const butterfly = document.getElementById('butterfly-container');
-                if (butterfly) {
-                    butterfly.classList.remove('hiding');
-                }
             }
             updateHeader(pageId);
             window.scrollTo(0, 0);
@@ -734,13 +686,8 @@
                     </div>`; 
         }
 
-        function hideButterfly(element) {
-            element.classList.add('hiding');
-        }
-
         function applyPrimaryColor(color) { if (color) { document.documentElement.style.setProperty('--primary-red', color); } }
         function applyWebsiteName(name) { if (name) { const nameElement = document.querySelector('#main-header .website-name'); if (nameElement) { nameElement.innerHTML = `${name}<span>Buzz</span>`; } } }
-        function renderUpdates(updatesList) { const container = document.getElementById('update-list-container'); if (!container) return; if (updatesList.length === 0) { container.innerHTML = `<div id="no-results"><p>No updates available right now.</p></div>`; return; } container.innerHTML = updatesList.map(update => { const safeDetails = JSON.stringify({...update, type: 'update'}).replace(/'/g, '&apos;'); return `<div class="update-card" data-details='${safeDetails}'> <img src="${update.bannerUrl}" alt="Update Banner" class="update-banner" loading="lazy" decoding="async"> <div class="update-description"> <p>${update.description ? update.description.replace(/\n/g, '<br>') : 'No description.'}</p> </div> </div>`; }).join(''); }
         function renderBanners(banners) { const track = document.getElementById('slider-track'); if (!track) return; if (banners.length === 0) { track.innerHTML = ""; return; } track.innerHTML = banners.map(banner => { const bannerData = { ...banner, type: 'banner', id: banner.id || banner.title.replace(/\s+/g, '-') }; const styleAttribute = banner.imageUrl ? `style="background-image: url('${banner.imageUrl}');"` : ''; const safeDetails = JSON.stringify(bannerData).replace(/'/g, '&apos;'); return `<div class="hero-slide" ${styleAttribute}><h3 class="hero-title">${banner.title}</h3><button class="watch-now-btn" data-details='${safeDetails}'><span>${banner.buttonText || 'Watch Now'}</span><span>&gt;</span></button></div>`; }).join(''); if (!sliderInitialized) { initSlider(); sliderInitialized = true; } }
         
         function renderHomePage(animeList) {
