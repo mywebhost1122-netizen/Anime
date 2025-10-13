@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Anime Buzz</title>
     <style>
-        :root { --primary-red: #E50914; --background-color: #141414; --text-color: #ffffff; }
+        :root { --primary-red: #E50914; --background-color: #1a0202; --text-color: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             font-family: 'Segoe UI', sans-serif; 
@@ -38,7 +38,7 @@
         }
 
         #app-wrapper { display: none; }
-        .page { display: none; padding-bottom: 70px; }
+        .page { display: none; padding-bottom: 20px; }
         .page.active { display: block; }
 
         #main-header, #secondary-header { padding: 15px 20px; }
@@ -48,6 +48,55 @@
         .logo-placeholder { width: 35px; height: 35px; border-radius: 6px; margin-right: 15px; background-image: url('https://i.postimg.cc/gjS2LNtp/d036b4adf7918cd38c1b8f06523b7580.jpg'); background-size: cover; background-position: center; }
         .website-name { font-size: 26px; font-weight: 900; }
         .website-name span { color: var(--primary-red); }
+
+        .header-search-icon { width: 28px; height: 28px; cursor: pointer; }
+        .header-search-icon svg { width: 100%; height: 100%; fill: var(--text-color); }
+        
+        .total-count-display {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .header-right-group { display: flex; align-items: center; gap: 15px; }
+        #home-total-count { font-size: 13px; color: #aaa; font-weight: 500; }
+
+        #search-page .search-bar-container { padding: 10px 20px 15px 20px; position: relative; }
+        .new-search-bar {
+            display: flex;
+            align-items: center;
+            background-color: transparent;
+            border: 1.5px solid #444;
+            border-radius: 50px;
+            padding: 0 5px 0 20px;
+            height: 44px;
+        }
+        .new-search-bar .search-input {
+            flex-grow: 1;
+            border: none;
+            background: none;
+            color: var(--text-color);
+            font-size: 16px;
+            padding: 8px 0;
+            outline: none;
+        }
+        .new-search-bar .search-icon-inside {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+        }
+        .new-search-bar .search-icon-inside svg {
+            width: 18px;
+            height: 18px;
+            fill: #fff;
+        }
+        
         .details-title-group { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
         .uploader-name { font-size: 13px; color: #ccc; font-weight: 400; }
         .details-header-icons { display: flex; align-items: center; gap: 20px; }
@@ -55,7 +104,7 @@
         .save-icon path { fill: none; stroke: var(--text-color); stroke-width: 1.5; }
         .save-icon.saved path { fill: var(--primary-red); stroke: var(--primary-red); }
         .back-btn { display: inline-block; color: var(--text-color); text-decoration: none; font-size: 18px; padding: 20px 20px 0 20px; }
-        .back-btn:before { content: '‹ '; font-size: 24px; }
+        .back-btn:before { content: '‹ '; font-size: 30px; font-weight: bold; }
         .slider-container { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 768px; margin-bottom: 25px; overflow: hidden; background-color: #000; }
         .slider-track { position: relative; height: 100%; display: flex; }
         .hero-slide { position: relative; width: 100%; height: 100%; flex-shrink: 0; background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding: 30px; cursor: grab; }
@@ -64,15 +113,16 @@
         .watch-now-btn { z-index: 2; margin-top: 15px; padding: 10px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 4px; font-size: 14px; font-weight: bold; display: inline-flex; align-items: center; gap: 25px; cursor: pointer; text-transform: uppercase; }
         .anime-row { margin-bottom: 20px; }
         .anime-row h2 { font-size: 18px; margin-bottom: 12px; padding: 0 20px; }
-        .row-content { display: flex; overflow-x: auto; gap: 12px; padding: 0 20px 10px 20px; scrollbar-width: none; min-height: 185px; }
+        .row-content { display: flex; overflow-x: auto; gap: 8px; padding: 0 20px 10px 20px; scrollbar-width: none; }
         .row-content::-webkit-scrollbar { display: none; }
-        .anime-card { flex-shrink: 0; width: 110px; cursor: pointer; }
-        .anime-card-poster { position: relative; width: 100%; height: 155px; }
-        .anime-card img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; background-color: #333; }
-        .language-tag { position: absolute; top: 6px; right: 6px; background-color: rgba(20, 20, 20, 0.8); padding: 3px 7px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        .anime-card p { margin-top: 8px; font-size: 13px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #search-page .search-bar-container { padding: 15px 20px 25px 20px; }
-        .search-input { width: 100%; padding: 14px 20px; background-color: #2c2c2c; border: 1px solid var(--primary-red); border-radius: 25px; color: var(--text-color); font-size: 16px; }
+        
+        .anime-card { flex-shrink: 0; width: 120px; cursor: pointer; background-color: #1a1a1a; border-radius: 0; overflow: hidden; display: flex; flex-direction: column; }
+        .anime-card-poster { position: relative; width: 100%; height: 170px; }
+        .anime-card img { width: 100%; height: 100%; object-fit: cover; display: block; background-color: #333; }
+        .card-title-box { background-color: #1a1a1a; padding: 8px; width: 100%; height: 38px; display: flex; align-items: center; }
+        .card-title-box p { font-size: 13px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #ddd; margin: 0; width: 100%; }
+
+        .language-tag { position: absolute; top: 6px; right: 6px; background-color: rgba(20, 20, 20, 0.8); padding: 3px 7px; border-radius: 4px; font-size: 11px; font-weight: bold; z-index: 2; }
         #no-results { text-align: center; padding: 50px 20px; color: #888; }
         #search-results-wrapper, #saved-items-list { padding: 0 20px; }
         .search-result-item { display: flex; align-items: flex-start; margin-bottom: 20px; cursor: default; }
@@ -93,25 +143,95 @@
         .watch-btn { display: block; width: 100%; padding: 12px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 5px; font-size: 16px; font-weight: bold; text-align: center; cursor: pointer; }
         .download-btn-container { padding: 30px 20px; text-align: center; }
         .download-btn { display: inline-block; width: 100%; max-width: 350px; padding: 15px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #181818; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #333; z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e8e; text-decoration: none; font-size: 12px; cursor: pointer; flex: 1; text-align: center; }
-        .nav-item.active { color: var(--text-color); }
-        .nav-icon { width: 26px; height: 26px; margin-bottom: 3px; }
-        .nav-icon path { fill: currentColor; }
         .name-input { width: 100%; max-width: 350px; padding: 14px 20px; background-color: #2c2c2c; border: 1px solid #555; border-radius: 8px; color: var(--text-color); font-size: 16px; margin: 0 auto 20px auto; display: block; box-sizing: border-box; }
         .name-input:focus { outline: none; border-color: var(--primary-red); box-shadow: 0 0 10px rgba(229, 9, 20, 0.5); }
         .enter-btn { display: inline-block; width: 100%; max-width: 350px; padding: 14px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
-        #update-list-container { padding: 20px; }
-        .update-card { background-color: #2a2a2a; border-radius: 10px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer; }
-        .update-banner { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background-color: #333; }
-        .update-description { padding: 15px; font-size: 14px; line-height: 1.6; }
-        .join-chat-btn { background-color: var(--primary-red); color: var(--text-color); padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-flex; align-items: center; white-space: nowrap; }
+        
+        .footer-section { padding: 40px 20px 20px 20px; border-top: 1px solid #333; margin-top: 30px; }
+        .footer-section h2, .footer-section h3 { color: #a98eff; margin-bottom: 15px; }
+        .footer-section p, .footer-section ul { color: #ccc; line-height: 1.6; margin-bottom: 25px; font-size: 15px; }
+        .footer-section ul { list-style: none; padding-left: 5px; }
+        .footer-section ul li { margin-bottom: 8px; }
+        .quick-links-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        .quick-link-btn { background: var(--primary-red); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; color: #fff; font-weight: bold; font-size: 14px; cursor: pointer; text-decoration: none; }
+        .quick-link-btn svg { width: 20px; height: 20px; fill: #fff; }
+        .copyright { text-align: center; font-size: 12px; color: #888; line-height: 1.5; }
+        .static-page-content { padding: 20px; }
+        .static-page-content h1 { color: #a98eff; margin-bottom: 20px; }
+        .static-page-content h4 { color: #fff; margin-top: 25px; margin-bottom: 10px; font-size: 16px; }
+        .static-page-content p { color: #ccc; line-height: 1.7; margin-bottom: 15px; }
+        .static-page-content ul { list-style: none; padding-left: 5px; margin-bottom: 25px; }
+        .static-page-content li { color: #ccc; margin-bottom: 8px; }
+
+        /* <!-- === YAHAN BADLAAV KIYA GAYA HAI (CSS) === --> */
+        #butterfly-container {
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0;
+            animation: fly-path 3s ease-in-out 0.5s forwards;
+            transform-style: preserve-3d;
+            perspective: 800px;
+        }
+        #butterfly-container.hiding {
+            animation: fly-away 1s ease-in forwards;
+            pointer-events: none;
+        }
+        .butterfly {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: hover-effect 2s infinite alternate ease-in-out 3.5s;
+        }
+        .butterfly-part {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(171, 104, 255, 0.5));
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        .left-wing {
+            animation: flap-left 0.4s infinite alternate ease-in-out;
+            transform-origin: right center;
+        }
+        .right-wing {
+            animation: flap-right 0.4s infinite alternate ease-in-out;
+            transform-origin: left center;
+        }
+        @keyframes fly-path {
+            0% { opacity: 1; top: -100px; left: -100px; transform: scale(0.5) rotate(45deg); }
+            50% { opacity: 1; top: 100px; left: 80%; transform: scale(1.2) rotate(-20deg); }
+            100% { opacity: 1; top: 58px; left: calc(100% - 105px); transform: scale(1) rotate(15deg); }
+        }
+        @keyframes hover-effect {
+            from { transform: translateY(0px) rotate(15deg); }
+            to { transform: translateY(-6px) rotate(10deg); }
+        }
+        @keyframes flap-left {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(70deg); }
+        }
+        @keyframes flap-right {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(-70deg); }
+        }
+        @keyframes fly-away {
+            0% { opacity: 1; transform: scale(1) rotate(15deg); }
+            30% { opacity: 1; transform: scale(1.2) rotate(0deg); }
+            100% { opacity: 0; top: -150px; left: 120%; transform: scale(0.3) rotate(120deg); }
+        }
+        /* <!-- === BADLAAV KHATAM (CSS) === --> */
+
         @media (min-width: 768px) {
             .row-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; overflow-x: hidden; }
             .anime-card { width: auto; }
             #search-results-wrapper, #saved-items-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
             .search-result-item { max-width: 100%; }
-            #update-list-container { max-width: 800px; margin: 0 auto; }
+            .footer-section { max-width: 800px; margin: 30px auto 0 auto; }
         }
     </style>
 </head>
@@ -128,13 +248,239 @@
     </div>
 
     <div id="app-wrapper">
-        <header id="main-header"><div class="header-content"><div class="logo-group"><div class="logo-placeholder"></div><h1 class="website-name">Anime<span>Buzz</span></h1></div></div></header>
-        <header id="secondary-header"><div class="header-content" id="secondary-header-content"></div></header>
-        <div id="home-page" class="page active"><main><section id="banner-container" class="slider-container"><div id="slider-track" class="slider-track"></div></section><div id="home-rows"></div></main></div>
-        <div id="search-page" class="page"><div class="search-bar-container"><input type="text" id="searchInput" class="search-input" placeholder="Search..." onkeyup="handleSearch()"></div><div id="search-results-wrapper"></div></div>
-        <div id="saved-page" class="page"><div id="saved-items-list"></div></div>
-        <div id="update-page" class="page"><div id="update-list-container"></div></div>
+        <header id="main-header">
+            <div class="header-content">
+                <div class="logo-group" onclick="navigateTo('home-page')" style="cursor: pointer;">
+                    <div class="logo-placeholder"></div>
+                    <h1 class="website-name">Anime<span>Buzz</span></h1>
+                </div>
+                <div class="header-right-group">
+                    <span id="home-total-count"></span>
+                    <div class="header-search-icon" onclick="navigateTo('search-page')">
+                        <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </header>
 
+        <header id="secondary-header"><div class="header-content" id="secondary-header-content"></div></header>
+        <div id="home-page" class="page active">
+            <main>
+                <section id="banner-container" class="slider-container"><div id="slider-track" class="slider-track"></div></section>
+                <div id="home-rows"></div>
+                <footer class="footer-section">
+                    <h2>About Anime Buzz</h2>
+                    <p><strong>Educational Anime Platform</strong> - Your guide to anime world through images and reviews. We provide screenshots and analysis for learning purposes only.</p>
+                    <hr style="border: 1px solid #222; margin: 25px 0;">
+                    <h3>What We Offer:</h3>
+                    <ul>
+                        <li>[✅] Anime Image Galleries</li>
+                        <li>[✅] Educational Content</li>
+                        <li>[✅] Reviews & Discussions</li>
+                        <li>[❌] No Video Streaming</li>
+                    </ul>
+                    <h3>Quick Links</h3>
+                    <div class="quick-links-container">
+                        <a class="quick-link-btn" onclick="navigateTo('contact-page')">
+                            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm0 4l8 5 8-5V6l-8 5-8-5v2z"></path></svg>
+                            <span>Contact</span>
+                        </a>
+                        <a class="quick-link-btn" onclick="navigateTo('dmca-page')">
+                            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"></path></svg>
+                            <span>DMCA</span>
+                        </a>
+                        <a class="quick-link-btn" onclick="navigateTo('terms-page')">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"></path></svg>
+                            <span>Terms</span>
+                        </a>
+                    </div>
+                    <p class="copyright">
+                        © 2025 Anime Buzz. | Educational Purpose Only | Credits to Original Creators
+                    </p>
+                </footer>
+            </main>
+        </div>
+        
+        <div id="search-page" class="page">
+            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
+            <div class="search-bar-container">
+                <p id="total-anime-count" class="total-count-display"></p>
+                <div class="new-search-bar">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search your favorite anime..." onkeyup="handleSearch()">
+                    <div class="search-icon-inside">
+                        <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"></path></svg>
+                    </div>
+                </div>
+                <!-- === YAHAN BADLAAV KIYA GAYA HAI (HTML) === -->
+                <div id="butterfly-container" onclick="hideButterfly(this)">
+                    <div class="butterfly">
+                        <img class="butterfly-part left-wing" src="https://i.postimg.cc/tJc7g7j1/wing-left.png" alt="">
+                        <img class="butterfly-part body" src="https://i.postimg.cc/8c8c4N3c/body.png" alt="">
+                        <img class="butterfly-part right-wing" src="https://i.postimg.cc/zX7fyB7C/wing-right.png" alt="">
+                    </div>
+                </div>
+                <!-- === BADLAAV KHATAM (HTML) === -->
+            </div>
+            <div id="search-results-wrapper"></div>
+        </div>
+
+        <div id="contact-page" class="page">
+            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
+            <div class="static-page-content">
+                <h1>Contact Us</h1>
+                <p>If you have any questions or feedback, please feel free to reach out to us. We are always happy to hear from our community.</p>
+                <p>You can contact us via email at: <strong>IamAnimebuzz@gmail.com</strong></p>
+            </div>
+        </div>
+        <div id="dmca-page" class="page">
+            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
+            <div class="static-page-content">
+                <h1>DMCA Policy - Anime Buzz</h1>
+                <h4>Our Copyright Respect Mission</h4>
+                <p>At Anime Buzz, we deeply respect anime creators and copyright holders. Our platform operates with pure intentions to promote anime culture through legal educational content only. We immediately comply with all legitimate copyright concerns.</p>
+                
+                <h4>What We Use (Educational Purpose)</h4>
+                <ul>
+                    <li>· Screenshots for review and analysis</li>
+                    <li>· Promotional images with proper credit</li>
+                    <li>· Low-resolution thumbnails for educational purposes</li>
+                    <li>· Content under Fair Use for commentary and criticism</li>
+                </ul>
+
+                <h4>Reporting Copyright Infringement</h4>
+                <p>If you believe your copyrighted work has been used in a way that constitutes infringement, please provide our Copyright Agent with:</p>
+                
+                <h4>Required Information:</h4>
+                <ol style="padding-left: 20px; color: #ccc;">
+                    <li style="margin-bottom: 8px;">Your complete contact details (name, address, phone, email)</li>
+                    <li style="margin-bottom: 8px;">Identification of the copyrighted work</li>
+                    <li style="margin-bottom: 8px;">Exact URL of the content on our site</li>
+                    <li style="margin-bottom: 8px;">Statement of good faith belief that use is not authorized</li>
+                    <li style="margin-bottom: 8px;">Statement under penalty of perjury that you are authorized to act</li>
+                    <li style="margin-bottom: 8px;">Your physical or electronic signature</li>
+                </ol>
+
+                <h4>Our Prompt Action Guarantee</h4>
+                <p>We commit to:</p>
+                <ul>
+                    <li>· 24-48 hour response time to valid notices</li>
+                    <li>· Immediate removal of infringing content</li>
+                    <li>· Permanent prevention of re-uploaded content</li>
+                    <li>· Full cooperation with copyright owners</li>
+                </ul>
+
+                <h4>Counter-Notification Process</h4>
+                <p>If you believe content was removed by mistake, you may submit a counter-notification with:</p>
+                <ul>
+                    <li>· Your contact information and signature</li>
+                    <li>· Identification of removed content</li>
+                    <li>· Statement under penalty of perjury of mistaken removal</li>
+                    <li>· Consent to local jurisdiction</li>
+                </ul>
+
+                <h4>Why We Have This Policy</h4>
+                <p>We maintain this DMCA policy because:</p>
+                <ul>
+                    <li>· We respect creators' rights and hard work</li>
+                    <li>· We want to operate completely legally</li>
+                    <li>· We support the anime industry's growth</li>
+                    <li>· We believe in ethical anime promotion</li>
+                </ul>
+
+                <h4>Contact Our DMCA Agent</h4>
+                <p>Email: dmca@animebuzz.com<br>Response Time: Within 24-48 hours<br>Note: We prioritize copyright holder concerns</p>
+
+                <p><strong>Our Promise to Copyright Holders</strong></p>
+                <p>"We built Anime Buzz out of love for anime. We never intend to harm the industry we love. We will immediately resolve any legitimate copyright concerns."</p>
+                <hr style="border-color: #333; margin: 20px 0;">
+                <p><strong>Key Features of This DMCA:</strong></p>
+                <ul>
+                    <li>✅Respectful tone toward copyright holders</li>
+                    <li>✅ Clear educational purpose stated</li>
+                    <li>✅ Fast response time promised</li>
+                    <li>✅ Good intentions emphasized</li>
+                    <li>✅ Professional and compliant</li>
+                </ul>
+            </div>
+        </div>
+        <div id="terms-page" class="page">
+            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
+            <div class="static-page-content">
+                <h1>Terms and Conditions - Anime Buzz</h1>
+                
+                <h4>1. Introduction & Purpose</h4>
+                <p>Welcome to Anime Buzz! We are an educational platform dedicated to promoting anime culture through legal and ethical means. Our sole purpose is to:</p>
+                <ul>
+                    <li>· Increase awareness and popularity of anime</li>
+                    <li>· Provide educational content about anime</li>
+                    <li>· Support official anime distributors and creators</li>
+                    <li>· Build a positive community for anime enthusiasts</li>
+                </ul>
+
+                <h4>2. Our Good Faith Intentions</h4>
+                <p>We explicitly state that we have no malicious intentions. Our mission is purely to:</p>
+                <ul>
+                     <li>· Celebrate anime art and storytelling</li>
+                     <li>· Guide users toward legal streaming platforms</li>
+                     <li>· Create educational content that benefits the anime community</li>
+                     <li>· Respect copyright holders and Japanese creators</li>
+                </ul>
+
+                <h4>3. What We Provide (Legal Services)</h4>
+                <ul>
+                    <li>· Image Galleries: Screenshots and promotional images for educational purposes</li>
+                    <li>· Anime Reviews & Analysis: Original written content about anime series</li>
+                    <li>· Educational Guides: Information about anime history, genres, and culture</li>
+                    <li>· Legal Streaming Directories: Links to official platforms like Crunchyroll, Netflix</li>
+                </ul>
+
+                <h4>4. What We DON'T Provide</h4>
+                <ul>
+                    <li>· ❌ No video streaming or hosting </li>
+                    <li>· ❌ No pirated or unauthorized materials</li>
+                </ul>
+
+                <h4>5. Copyright Respect Policy</h4>
+                <p>We deeply respect intellectual property:</p>
+                <ul>
+                    <li>· All images are used under Fair Use for educational purposes</li>
+                    <li>· We provide clear credit to original creators and studios</li>
+                    <li>· We immediately remove content upon copyright owner request</li>
+                    <li>· We encourage users to support official releases</li>
+                </ul>
+
+                <h4>6. User Responsibilities</h4>
+                <p>By using our site, you agree to:</p>
+                <ul>
+                    <li>· Use our content only for educational purposes</li>
+                    <li>· Respect copyright and give proper credit</li>
+                    <li>· Not misuse our images for illegal activities</li>
+                    <li>· Support official anime distributors</li>
+                </ul>
+
+                <h4>7. DMCA Compliance</h4>
+                <p>We fully comply with DMCA regulations and have a clear takedown process for copyright holders.</p>
+
+                <h4>8. Support Official Anime</h4>
+                <p>We explicitly encourage all users to:</p>
+                <ul>
+                    <li>· Watch anime on licensed platforms</li>
+                    <li>· Purchase official merchandise</li>
+                    <li>· Support the anime industry financially</li>
+                    <li>· Respect creators' hard work</li>
+                </ul>
+                <br>
+                <p><strong>Key Features:</strong></p>
+                <ul>
+                    <li>✅Clear good faith intentions declared</li>
+                    <li>✅ Educational purpose emphasized</li>
+                    <li>✅ Support for official anime stressed</li>
+                    <li>✅ Legal boundaries clearly defined</li>
+                    <li>✅ Professional and transparent tone</li>
+                </ul>
+            </div>
+        </div>
+        
         <div id="details-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a><div class="details-content-wrapper"><div class="details-poster-container"><img src="" id="details-poster" class="details-poster" loading="lazy" decoding="async"></div><div class="details-info"><h1 id="details-title"></h1><p id="details-desc"></p></div><div class="action-button-container"><button id="details-watch-btn" class="watch-btn" onclick="navigateTo('episodes-page')">Watch Now</button></div></div></div>
         <div id="episodes-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateTo('details-page')">Back</a><div id="episodes-container"></div></div>
         
@@ -145,13 +491,6 @@
                 <p id="update-details-desc" style="white-space: pre-wrap; line-height: 1.7;"></p>
             </div>
         </div>
-
-        <nav class="bottom-nav">
-            <a id="nav-home" class="nav-item active" onclick="navigateTo('home-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg><span>Home</span></a>
-            <a id="nav-search" class="nav-item" onclick="navigateTo('search-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"></path></svg><span>Search</span></a>
-            <a id="nav-saved" class="nav-item" onclick="navigateTo('saved-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg><span>Saved</span></a>
-            <a id="nav-update" class="nav-item" onclick="navigateTo('update-page')"><svg class="nav-icon" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-1.707-1.707A1 1 0 00.879 11.293l-1.293 1.293a1 1 0 000 1.414l5 5a1 1 0 001.414 0l5-5a1 1 0 000-1.414l-1.293-1.293a1 1 0 00-1.414-.293L10 11.586V8a4 4 0 118 0v1a1 1 0 102 0V8a6 6 0 00-6-6z"></path></svg><span>Update</span></a>
-        </nav>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -172,9 +511,6 @@
         let isAppReady = false;
         let initialDataRendered = { banners: false, anime: false };
         let fullAnimeListLoaded = false; 
-
-        let lastVisibleAnime = null;
-        let isLoadingMore = false;
 
         function revealApp() {
             document.getElementById('loader-container').style.display = 'none';
@@ -219,15 +555,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             userName = localStorage.getItem('animeBuzzUserName');
             initializeApp();
-
-            window.addEventListener('scroll', () => {
-                if (document.getElementById('home-page').classList.contains('active') && 
-                    (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200 && 
-                    !isLoadingMore) {
-                    loadMoreAnime();
-                }
-            });
-
+            
             document.body.addEventListener('click', (event) => { 
                 const clickableItem = event.target.closest('.search-item-poster, .search-item-title, .anime-card, .update-card'); 
                 if (clickableItem && clickableItem.dataset.details) { 
@@ -251,25 +579,24 @@
                     if (doc.exists) {
                         const config = doc.data();
                         applyPrimaryColor(config.primaryColor);
-                        applyBackground(config.backgroundUrl);
                         applyWebsiteName(config.websiteName);
                     }
                 }, err => console.error("Error fetching site config:", err));
-
-                db.collection('anime').orderBy("title").limit(40).onSnapshot(snapshot => {
-                    const docs = snapshot.docs;
-                    lastVisibleAnime = docs[docs.length - 1];
-                    const initialAnime = docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    if (!fullAnimeListLoaded) {
-                        allData.anime = initialAnime;
-                    }
-                    renderHomePage(allData.anime);
-                    
-                    if (!initialDataRendered.anime) {
-                        initialDataRendered.anime = true;
-                        checkInitialRenderComplete();
-                    }
-                }, err => console.error("Error fetching anime:", err));
+                
+                db.collection('anime').orderBy("title").limit(30).get()
+                    .then(snapshot => {
+                        const initialAnime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderHomePage(initialAnime); 
+                        
+                        if (!initialDataRendered.anime) {
+                            initialDataRendered.anime = true;
+                            checkInitialRenderComplete();
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching anime for home page:", err);
+                        document.getElementById("home-rows").innerHTML = `<p style="text-align:center; color:#888;">Failed to load anime.</p>`;
+                    });
 
                 db.collection('animeBanners').onSnapshot(snapshot => {
                     allData.animeBanners = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -280,6 +607,7 @@
                     }
                 }, err => console.error("Error fetching banners:", err));
                 
+                fetchFullListAndCount();
                 setupRealtimeListeners();
             } catch (err) {
                 console.error("Error initializing app:", err);
@@ -287,39 +615,32 @@
             }
         }
 
-        async function loadMoreAnime() {
-            if (isLoadingMore || !lastVisibleAnime) return;
-            isLoadingMore = true;
-
-            try {
-                const snapshot = await db.collection('anime')
-                    .orderBy("title")
-                    .startAfter(lastVisibleAnime)
-                    .limit(20)
-                    .get();
-
-                const docs = snapshot.docs;
-                if (docs.length > 0) {
-                    lastVisibleAnime = docs[docs.length - 1];
-                    const newAnime = docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    allData.anime = [...allData.anime, ...newAnime];
-                    renderHomePage(allData.anime);
-                }
-            } catch (err) {
-                console.error("Error loading more anime:", err);
-            }
-            isLoadingMore = false;
-        }
-
-        async function fetchAllAnimeForSearch() {
+        async function fetchFullListAndCount() {
             if (fullAnimeListLoaded) return;
             try {
-                const snapshot = await db.collection('anime').orderBy("title").get();
+                const snapshot = await db.collection('anime').get();
                 allData.anime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 fullAnimeListLoaded = true;
-                handleSearch(true);
+                
+                const totalCount = allData.anime.length;
+                const homeCountEl = document.getElementById('home-total-count');
+                const searchCountEl = document.getElementById('total-anime-count');
+                
+                if (homeCountEl) homeCountEl.innerText = `Total: ${totalCount}`;
+                if (searchCountEl) searchCountEl.innerText = `Total ${totalCount} anime available.`;
+                
+                if(document.getElementById('search-page').classList.contains('active')) {
+                    handleSearch(true);
+                }
+
             } catch (err) {
-                console.error("Error fetching full anime list for search:", err);
+                console.error("Error fetching full anime list for count:", err);
+            }
+        }
+        
+        async function fetchAllAnimeForSearch() {
+            if (!fullAnimeListLoaded) {
+                await fetchFullListAndCount();
             }
         }
         
@@ -330,15 +651,13 @@
             }, err => console.error("Error fetching updates:", err));
         }
         
-        // ---=== `navigateTo` FUNCTION MEIN BADLAAV KIYA GAYA HAI ===---
         function navigateTo(pageId, data = null) {
             if (pageHistory[pageHistory.length - 1] !== pageId || data) {
-                if (pageHistory[pageHistory.length - 1] !== pageId) pageHistory.push(pageId);
+                 if (pageHistory[pageHistory.length - 1] !== pageId) pageHistory.push(pageId);
             }
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId)?.classList.add('active');
 
-            // `currentItemData` ko dono pages ke liye set kiya jaa raha hai
             if ((pageId === 'details-page' || pageId === 'update-details-page') && data) {
                 currentItemData = data;
             }
@@ -358,10 +677,13 @@
             if (pageId === 'saved-page') renderSavedItems();
 
             if (pageId === 'search-page') {
-                if (!fullAnimeListLoaded) {
-                    fetchAllAnimeForSearch();
-                } else {
+                document.getElementById('searchInput').value = ''; 
+                fetchAllAnimeForSearch().then(() => {
                     handleSearch(true);
+                });
+                const butterfly = document.getElementById('butterfly-container');
+                if (butterfly) {
+                    butterfly.classList.remove('hiding');
                 }
             }
             updateHeader(pageId);
@@ -370,56 +692,106 @@
         
         function createSearchResultItem(item) { const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;'); const ratingHtml = item.rating ? `<div class="rating-display">⭐ ${item.rating}</div>` : ''; const episodeLink = item.episodeLink ? item.episodeLink.replace(/'/g, "\\'") : ''; const downloadBtnHtml = item.episodeLink ? `<button class="list-download-btn" onclick="openExternalLink('${episodeLink}')">Download</button>` : ''; return ` <div class="search-result-item" data-details='${safeDetails}'> <div class="search-item-poster" data-details='${safeDetails}'> <img loading="lazy" decoding="async" width="100" height="145" src="${item.imageUrl}" alt="${item.title}"> ${item.language ? `<span class="language-tag">${item.language}</span>` : ''} </div> <div class="search-item-info"> <div class="search-item-header"> <div class="search-item-title" data-details='${safeDetails}'>${item.title}</div> ${ratingHtml} </div> <div class="search-item-desc">${item.description || 'No description available.'}</div> ${downloadBtnHtml} </div> </div>`; }
 
-        // ---=== `updateHeader` FUNCTION MEIN BADLAAV KIYA GAYA HAI ===---
         function updateHeader(pageId) {
-            const pageHeaders = { "search-page": "Search", "saved-page": "My List", "update-page": "Latest Updates", "details-page": "Details", "episodes-page": "Episodes", "update-details-page": "Update" };
+            const pageHeaders = { "details-page": "Details", "episodes-page": "Episodes", "update-details-page": "Update", "contact-page": "Contact Us", "dmca-page": "DMCA Policy", "terms-page": "Terms of Service" };
             const title = pageHeaders[pageId];
             const mainHeader = document.getElementById("main-header");
             const secondaryHeader = document.getElementById("secondary-header");
             const headerContentEl = document.getElementById("secondary-header-content");
-
+            
             if (title) {
                 mainHeader.style.display = "none";
                 secondaryHeader.style.display = "block";
                 let headerContent = '';
-
-                if ("details-page" === pageId && currentItemData) {
-                    let titleHtml = `<h1 class="website-name">${title}</h1>`;
-                    if (currentItemData.uploadedBy) {
-                        titleHtml = `<div class="details-title-group">${titleHtml}<span class="uploader-name">by ${currentItemData.uploadedBy}</span></div>`;
-                    }
-                    headerContent = titleHtml;
+                if (pageId === "details-page" && currentItemData) {
+                    headerContent = `<h1 class="website-name">${title}</h1>`;
                     if (currentItemData.type === 'anime') {
                         const safeTitle = currentItemData.title ? currentItemData.title.replace(/'/g, "\\'") : '';
                         let iconsHtml = `<svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
                         headerContent += `<div class="details-header-icons">${iconsHtml}</div>`;
                     }
-                } else if (pageId === 'update-details-page' && currentItemData) {
-                    // Ab yeh currentItemData se groupChatLink lega
-                    const telegramLink = currentItemData.groupChatLink && currentItemData.groupChatLink.trim() !== '' ? currentItemData.groupChatLink : '#';
-                    const joinButton = `<a href="${telegramLink}" target="_blank" class="join-chat-btn">Join Group Chat</a>`;
-                    headerContent = `<h1 class="website-name">${title}</h1>${joinButton}`;
                 } else {
-                    headerContent = `<h1 class="website-name">${title}</h1>`;
+                     headerContent = `<h1 class="website-name">${title}</h1>`;
                 }
                 headerContentEl.innerHTML = headerContent;
             } else {
                 mainHeader.style.display = "block";
                 secondaryHeader.style.display = "none";
             }
-            document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
-            document.getElementById(`nav-${pageId.split("-")[0]}`)?.classList.add("active");
+        }
+        
+        function createAnimeCard(item) { 
+            const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : ''; 
+            const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;');  
+            return `<div class="anime-card" data-details='${safeDetails}'>
+                        <div class="anime-card-poster">
+                            <img loading="lazy" decoding="async" src="${item.imageUrl}" alt="${item.title}"> 
+                            ${langTag}
+                        </div>
+                        <div class="card-title-box">
+                            <p>${item.title}</p>
+                        </div>
+                    </div>`; 
         }
 
-        // --- Baaki JavaScript code waisa hi hai ---
-        function createAnimeCard(item) { const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : ''; const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;');  return `<div class="anime-card" data-details='${safeDetails}'><div class="anime-card-poster"><img loading="lazy" decoding="async" width="110" height="155" src="${item.imageUrl}" alt="${item.title}"> ${langTag}</div><p>${item.title}</p></div>`; }
+        function hideButterfly(element) {
+            element.classList.add('hiding');
+        }
+
         function applyPrimaryColor(color) { if (color) { document.documentElement.style.setProperty('--primary-red', color); } }
-        function applyBackground(url) { if (url) { document.body.style.backgroundImage = `url('${url}')`; } }
         function applyWebsiteName(name) { if (name) { const nameElement = document.querySelector('#main-header .website-name'); if (nameElement) { nameElement.innerHTML = `${name}<span>Buzz</span>`; } } }
         function renderUpdates(updatesList) { const container = document.getElementById('update-list-container'); if (!container) return; if (updatesList.length === 0) { container.innerHTML = `<div id="no-results"><p>No updates available right now.</p></div>`; return; } container.innerHTML = updatesList.map(update => { const safeDetails = JSON.stringify({...update, type: 'update'}).replace(/'/g, '&apos;'); return `<div class="update-card" data-details='${safeDetails}'> <img src="${update.bannerUrl}" alt="Update Banner" class="update-banner" loading="lazy" decoding="async"> <div class="update-description"> <p>${update.description ? update.description.replace(/\n/g, '<br>') : 'No description.'}</p> </div> </div>`; }).join(''); }
         function renderBanners(banners) { const track = document.getElementById('slider-track'); if (!track) return; if (banners.length === 0) { track.innerHTML = ""; return; } track.innerHTML = banners.map(banner => { const bannerData = { ...banner, type: 'banner', id: banner.id || banner.title.replace(/\s+/g, '-') }; const styleAttribute = banner.imageUrl ? `style="background-image: url('${banner.imageUrl}');"` : ''; const safeDetails = JSON.stringify(bannerData).replace(/'/g, '&apos;'); return `<div class="hero-slide" ${styleAttribute}><h3 class="hero-title">${banner.title}</h3><button class="watch-now-btn" data-details='${safeDetails}'><span>${banner.buttonText || 'Watch Now'}</span><span>&gt;</span></button></div>`; }).join(''); if (!sliderInitialized) { initSlider(); sliderInitialized = true; } }
-        function renderHomePage(animeList) { const container = document.getElementById("home-rows"); if (!container) return; savedItems = JSON.parse(localStorage.getItem('animeBuzzSaved')) || []; const categories = animeList.reduce((acc, anime) => { (acc[anime.category || "Trending"] = acc[anime.category || "Trending"] || []).push(anime); return acc; }, {}); container.innerHTML = Object.entries(categories).map(([category, items]) => `<section class="anime-row"><h2>${category}</h2><div class="row-content">${items.map(createAnimeCard).join('')}</div></section>`).join(''); }
-        function handleSearch(showAll = false) { const term = document.getElementById("searchInput").value.toLowerCase(); const resultsWrapper = document.getElementById("search-results-wrapper"); const listToSearch = allData.anime; if (showAll && !term) { resultsWrapper.innerHTML = listToSearch.map(createSearchResultItem).join(''); return; } const filtered = listToSearch.filter(e => e.title.toLowerCase().includes(term)); resultsWrapper.innerHTML = filtered.length ? filtered.map(createSearchResultItem).join('') : `<div id="no-results"><p>No results found</p></div>`; }
+        
+        function renderHomePage(animeList) {
+            const container = document.getElementById("home-rows");
+            if (!container) return;
+            
+            if (!animeList || animeList.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#888;">No anime found.</p>`;
+                return;
+            }
+
+            const categories = [
+                { title: "Popular", items: animeList.slice(0, 10) },
+                { title: "Trending", items: animeList.slice(10, 20) },
+                { title: "Peak time", items: animeList.slice(20, 30) }
+            ];
+
+            let finalHtml = '';
+            for (const category of categories) {
+                if (category.items.length > 0) {
+                    finalHtml += `<section class="anime-row"><h2>${category.title}</h2><div class="row-content">${category.items.map(createAnimeCard).join('')}</div></section>`;
+                }
+            }
+
+            container.innerHTML = finalHtml;
+        }
+        
+        function handleSearch(showAll = false) { 
+            const term = document.getElementById("searchInput").value.toLowerCase(); 
+            const resultsWrapper = document.getElementById("search-results-wrapper"); 
+            const countElement = document.getElementById('total-anime-count');
+            const listToSearch = allData.anime; 
+            const totalCount = listToSearch.length;
+            
+            if (showAll && !term) { 
+                resultsWrapper.innerHTML = listToSearch.map(createSearchResultItem).join(''); 
+                if (countElement) countElement.innerText = `Total ${totalCount} anime available.`;
+                return; 
+            } 
+            
+            const filtered = listToSearch.filter(e => e.title.toLowerCase().includes(term)); 
+            
+            if (filtered.length) {
+                resultsWrapper.innerHTML = filtered.map(createSearchResultItem).join('');
+                if (countElement) countElement.innerText = `Showing ${filtered.length} of ${totalCount} anime.`;
+            } else {
+                resultsWrapper.innerHTML = `<div id="no-results"><p>No results found</p></div>`; 
+                if (countElement) countElement.innerText = `Found 0 of ${totalCount} anime.`;
+            }
+        }
+
         function renderDownloadPage() { const container = document.getElementById("episodes-container"); if (currentItemData && currentItemData.episodeLink) { container.innerHTML = `<div class="download-btn-container"><button class="download-btn" onclick="openExternalLink('${currentItemData.episodeLink}')">Download file</button></div>`; } else { container.innerHTML = '<p style="text-align: center; padding: 40px;">Download link not available.</p>'; } }
         function navigateBack() { if (pageHistory.length > 1) { pageHistory.pop(); navigateTo(pageHistory[pageHistory.length - 1]); } }
         function toggleSave(icon, id, title, imageUrl) { const isSaved = icon.classList.toggle("saved"); if (isSaved) { if (!savedItems.some(i => i.id === id)) savedItems.push({ id, title, imageUrl }); } else { savedItems = savedItems.filter(i => i.id !== id); } localStorage.setItem("animeBuzzSaved", JSON.stringify(savedItems)); }
@@ -428,4 +800,4 @@
         function initSlider() { const container = document.getElementById('banner-container'); const track = document.getElementById('slider-track'); if (!container || !track) return; let slides = Array.from(track.children); if (slides.length <= 1) return; const slideCount = slides.length; const transitionTime = 400; const autoSlideInterval = 3000; track.style.setProperty('--transition-time', `${transitionTime}ms`); const firstClone = slides[0].cloneNode(true); firstClone.classList.add('clone'); const lastClone = slides[slideCount - 1].cloneNode(true); lastClone.classList.add('clone'); track.appendChild(firstClone); track.insertBefore(lastClone, slides[0]); let currentIndex = 1; let isDragging = false; let startPos = 0; let currentTranslate = 0; let prevTranslate = 0; let autoSlideTimer; function getPositionX(event) { return event.touches ? event.touches[0].clientX : event.pageX; } function setPositionByIndex() { currentTranslate = currentIndex * -container.offsetWidth; track.style.transform = `translateX(${currentTranslate}px)`; } function shiftSlides() { if (currentIndex <= 0) { track.style.transition = 'none'; currentIndex = slideCount; setPositionByIndex(); } else if (currentIndex >= slideCount + 1) { track.style.transition = 'none'; currentIndex = 1; setPositionByIndex(); } setTimeout(() => { track.style.transition = `transform ${transitionTime}ms ease-out`; }, 50); } function startAutoSlide() { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => { currentIndex++; setPositionByIndex(); if (currentIndex >= slideCount + 1) { setTimeout(shiftSlides, transitionTime); } }, autoSlideInterval); } function dragStart(event) { clearInterval(autoSlideTimer); isDragging = true; startPos = getPositionX(event); prevTranslate = currentTranslate; track.style.transition = 'none'; } function dragMove(event) { if (isDragging) { const currentPosition = getPositionX(event); currentTranslate = prevTranslate + currentPosition - startPos; track.style.transform = `translateX(${currentTranslate}px)`; } } function dragEnd() { if (!isDragging) return; isDragging = false; const movedBy = currentTranslate - prevTranslate; if (movedBy < -100) currentIndex++; else if (movedBy > 100) currentIndex--; track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); shiftSlides(); startAutoSlide(); } container.addEventListener('mousedown', dragStart); container.addEventListener('touchstart', dragStart, { passive: true }); container.addEventListener('mouseup', dragEnd); container.addEventListener('touchend', dragEnd); container.addEventListener('mouseleave', dragEnd); container.addEventListener('mousemove', dragMove); container.addEventListener('touchmove', dragMove, { passive: true }); window.addEventListener('resize', setPositionByIndex); track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); startAutoSlide(); }
     </script>
 </body>
-   </html>
+    </html>
