@@ -205,6 +205,53 @@
             .search-result-item { max-width: 100%; }
             .footer-section { max-width: 800px; margin: 30px auto 0 auto; }
         }
+
+        /* --- यहाँ से नए बटन की स्टाइलिंग शुरू है --- */
+        .quality-buttons-container {
+            padding: 30px 20px;
+        }
+        .quality-buttons-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        .quality-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+        }
+        .quality-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 10px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            gap: 8px;
+            transition: transform 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .quality-btn:hover {
+            transform: scale(1.05);
+        }
+        .quality-btn svg {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+        .color-yellow { background-color: #F8D97F; color: #333; }
+        .color-red { background-color: #f7706f; }
+        .color-cyan { background-color: #6CD2B9; }
+        .color-blue { background-color: #6CA5F2; }
+        .color-red-lightning { background-color: #f7706f; }
+        /* --- यहाँ नए बटन की स्टाइलिंग खत्म है --- */
     </style>
 </head>
 <body>
@@ -739,7 +786,64 @@
             }
         }
 
-        function renderDownloadPage() { const container = document.getElementById("episodes-container"); if (currentItemData && currentItemData.episodeLink) { container.innerHTML = `<div class="download-btn-container"><button class="download-btn" onclick="openExternalLink('${currentItemData.episodeLink}')">Download file</button></div>`; } else { container.innerHTML = '<p style="text-align: center; padding: 40px;">Download link not available.</p>'; } }
+        // --- यह FUNCTION आपकी आवश्यकता के अनुसार बदल दिया गया है ---
+        function renderDownloadPage() {
+            const container = document.getElementById("episodes-container");
+            
+            // वर्तमान एनीमे के डेटा से टेलीग्राम लिंक प्राप्त करें
+            const telegramChannelUrl = currentItemData ? currentItemData.episodeLink : null;
+
+            // जांचें कि लिंक उपलब्ध है या नहीं
+            if (telegramChannelUrl && telegramChannelUrl.trim() !== '' && telegramChannelUrl.trim() !== '#') {
+                const downloadPageHTML = `
+                <div class="quality-buttons-container">
+                    <div class="quality-buttons-grid">
+                        <div class="quality-column">
+                            <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-yellow">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><rect x="5" y="15" width="14" height="5" rx="1" fill="#DCDCDC"/><path d="M12 14L9 10H11V3H13V10H15L12 14Z" fill="#4CAF50"/></g></svg>
+                                <span>HDRiP</span>
+                            </a>
+                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><rect x="5" y="15" width="14" height="5" rx="1" fill="#DCDCDC"/><path d="M12 14L9 10H11V3H13V10H15L12 14Z" fill="#4CAF50"/></g></svg>
+                                <span>1080p</span>
+                            </a>
+                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-cyan">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><rect x="5" y="15" width="14" height="5" rx="1" fill="#DCDCDC"/><path d="M12 14L9 10H11V3H13V10H15L12 14Z" fill="#4CAF50"/></g></svg>
+                                <span>720p</span>
+                            </a>
+                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-blue">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><rect x="5" y="15" width="14" height="5" rx="1" fill="#DCDCDC"/><path d="M12 14L9 10H11V3H13V10H15L12 14Z" fill="#4CAF50"/></g></svg>
+                                <span>480p</span>
+                            </a>
+                        </div>
+                        <div class="quality-column">
+                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red-lightning">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.8889 2L4 13.7778H12L10.8889 22L19.1111 9.11111H12L10.8889 2Z" fill="#FFC107"/></svg>
+                                <span>HDRiP</span>
+                            </a>
+                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red-lightning">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.8889 2L4 13.7778H12L10.8889 22L19.1111 9.11111H12L10.8889 2Z" fill="#FFC107"/></svg>
+                                <span>1080p</span>
+                            </a>
+                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red-lightning">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.8889 2L4 13.7778H12L10.8889 22L19.1111 9.11111H12L10.8889 2Z" fill="#FFC107"/></svg>
+                                <span>720p</span>
+                            </a>
+                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red-lightning">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.8889 2L4 13.7778H12L10.8889 22L19.1111 9.11111H12L10.8889 2Z" fill="#FFC107"/></svg>
+                                <span>480p</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                `;
+                container.innerHTML = downloadPageHTML;
+            } else {
+                // यदि कोई लिंक उपलब्ध नहीं है, तो यह संदेश दिखाएं।
+                container.innerHTML = '<p style="text-align: center; padding: 40px;">Download link not available.</p>';
+            }
+        }
+        
         function navigateBack() { if (pageHistory.length > 1) { pageHistory.pop(); navigateTo(pageHistory[pageHistory.length - 1]); } }
         function toggleSave(icon, id, title, imageUrl) { const isSaved = icon.classList.toggle("saved"); if (isSaved) { if (!savedItems.some(i => i.id === id)) savedItems.push({ id, title, imageUrl }); } else { savedItems = savedItems.filter(i => i.id !== id); } localStorage.setItem("animeBuzzSaved", JSON.stringify(savedItems)); }
         function renderSavedItems() { const listContainer = document.getElementById("saved-items-list"); if (savedItems.length > 0) { const fullItems = savedItems.map(item => allData.anime.find(a => a.id === item.id) || item); listContainer.innerHTML = fullItems.map(createSearchResultItem).join(''); } else { listContainer.innerHTML = `<div id="no-results"><p>Nothing saved yet.</p></div>`; } }
