@@ -3,27 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Anime Buzz</title>
+    <title>Anime Updates</title>
     <style>
-        :root { --primary-red: #E50914; --background-color: #1a0202; --text-color: #ffffff; }
+        :root { --primary-red: #E50914; --background-color: #000000; --text-color: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             font-family: 'Segoe UI', sans-serif; 
             background-color: var(--background-color); 
             color: var(--text-color);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            transition: background-image 0.5s ease-in-out;
         }
         #loader-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--background-color); display: flex; align-items: center;
-            justify-content: center; z-index: 9999; padding: 20px;
+            justify-content: center; z-index: 9999;
         }
-        .name-entry-box { text-align: center; width: 100%; max-width: 400px; }
-        .name-entry-box h2 { margin-bottom: 25px; font-size: 22px; font-weight: 600; }
-        
         .loader-spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid var(--primary-red);
@@ -38,817 +31,313 @@
         }
 
         #app-wrapper { display: none; }
-        .page { display: none; padding-bottom: 20px; }
+        .page { display: none; padding-bottom: 20px;}
         .page.active { display: block; }
 
-        #main-header, #secondary-header { padding: 15px 20px; }
-        #secondary-header { display: none; }
+        #main-header { padding: 15px 20px; }
         .header-content { display: flex; align-items: center; justify-content: space-between; }
-        .logo-group { display: flex; align-items: center; }
+        .logo-group { display: flex; align-items: center; cursor: pointer; flex-grow: 1; }
         .logo-placeholder { width: 35px; height: 35px; border-radius: 6px; margin-right: 15px; background-image: url('https://i.postimg.cc/gjS2LNtp/d036b4adf7918cd38c1b8f06523b7580.jpg'); background-size: cover; background-position: center; }
         .website-name { font-size: 26px; font-weight: 900; }
         .website-name span { color: var(--primary-red); }
 
-        .header-search-icon { width: 28px; height: 28px; cursor: pointer; }
-        .header-search-icon svg { width: 100%; height: 100%; fill: var(--text-color); }
+        .notification-bell { position: relative; cursor: pointer; padding: 5px; }
+        .notification-bell svg { width: 28px; height: 28px; fill: #ffffff; }
+        .notification-dot { position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; background-color: var(--primary-red); border-radius: 50%; border: 2px solid var(--background-color); transform: scale(0); transition: transform 0.2s ease-in-out; }
+        .notification-bell.has-new .notification-dot { transform: scale(1); }
         
-        .total-count-display {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #888;
-        }
-        
-        .header-right-group { display: flex; align-items: center; gap: 15px; }
-        #home-total-count { font-size: 13px; color: #aaa; font-weight: 500; }
+        .page-header { padding: 0 20px 20px 20px; }
 
-        #search-page .search-bar-container { padding: 10px 20px 15px 20px; position: relative; }
-        .new-search-bar {
-            display: flex;
-            align-items: center;
-            background-color: transparent;
-            border: 1.5px solid #444;
-            border-radius: 50px;
-            padding: 0 5px 0 20px;
-            height: 44px;
-        }
-        .new-search-bar .search-input {
-            flex-grow: 1;
-            border: none;
-            background: none;
-            color: var(--text-color);
-            font-size: 16px;
-            padding: 8px 0;
-            outline: none;
-        }
-        .new-search-bar .search-icon-inside {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #333;
-            border-radius: 50%;
-            width: 34px;
-            height: 34px;
-            flex-shrink: 0;
-        }
-        .new-search-bar .search-icon-inside svg {
-            width: 18px;
-            height: 18px;
-            fill: #fff;
-        }
-        
-        .details-title-group { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-        .uploader-name { font-size: 13px; color: #ccc; font-weight: 400; }
-        .details-header-icons { display: flex; align-items: center; gap: 20px; }
-        .save-icon { width: 30px; height: 30px; cursor: pointer; }
-        .save-icon path { fill: none; stroke: var(--text-color); stroke-width: 1.5; }
-        .save-icon.saved path { fill: var(--primary-red); stroke: var(--primary-red); }
-        .back-btn { display: inline-block; color: var(--text-color); text-decoration: none; font-size: 18px; padding: 20px 20px 0 20px; }
+        .back-btn { display: inline-block; color: var(--text-color); text-decoration: none; font-size: 18px; padding: 20px; }
         .back-btn:before { content: '‹ '; font-size: 30px; font-weight: bold; }
-        .slider-container { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 768px; margin-bottom: 25px; overflow: hidden; background-color: #000; }
-        .slider-track { position: relative; height: 100%; display: flex; }
-        .hero-slide { position: relative; width: 100%; height: 100%; flex-shrink: 0; background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; padding: 30px; cursor: grab; }
-        .hero-slide::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(20, 20, 20, 0.9), transparent); }
-        .hero-title { z-index: 2; font-size: 22px; font-weight: bold; text-shadow: 2px 2px 4px #000; text-align: left; }
-        .watch-now-btn { z-index: 2; margin-top: 15px; padding: 10px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 4px; font-size: 14px; font-weight: bold; display: inline-flex; align-items: center; gap: 25px; cursor: pointer; text-transform: uppercase; }
-        .anime-row { margin-bottom: 20px; }
+        
+        .banner-container { width: 100%; margin: 15px 0; overflow: hidden; }
+        .static-banner-image { width: 100%; aspect-ratio: 16 / 9; background-size: cover; background-position: center; background-color: #222; }
+        
+        .anime-row { margin: 30px 0; }
         .anime-row h2 { font-size: 18px; margin-bottom: 12px; padding: 0 20px; }
         .row-content { display: flex; overflow-x: auto; gap: 8px; padding: 0 20px 10px 20px; scrollbar-width: none; }
         .row-content::-webkit-scrollbar { display: none; }
         
-        .anime-card {
-            flex-shrink: 0;
-            width: 120px;
-            cursor: pointer;
-            background-color: #1a1a1a;
-            border-radius: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        .anime-card-poster {
-            position: relative;
-            width: 100%;
-            height: 170px;
-        }
-        .anime-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            background-color: #333;
-        }
-        .card-title-box {
-            background-color: #1a1a1a;
-            padding: 8px;
-            width: 100%;
-            height: 38px;
-            display: flex;
-            align-items: center;
-        }
-        .card-title-box p {
-            font-size: 13px;
-            text-align: left;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: #ddd;
-            margin: 0;
-            width: 100%;
-        }
+        .anime-card { flex-shrink: 0; width: 120px; background-color: #1a1a1a; border-radius: 8px; overflow: hidden; cursor: pointer; }
+        .anime-card img { width: 100%; height: 170px; object-fit: cover; background-color: #333; }
+        .card-title-box { padding: 8px; }
+        .card-title-box p { font-size: 13px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .language-tag { position: absolute; top: 6px; right: 6px; background-color: rgba(20, 20, 20, 0.8); padding: 3px 7px; border-radius: 4px; font-size: 11px; font-weight: bold; z-index: 2; }
-        #no-results { text-align: center; padding: 50px 20px; color: #888; }
-        #search-results-wrapper, #saved-items-list { padding: 0 20px; }
-        .search-result-item { display: flex; align-items: flex-start; margin-bottom: 20px; cursor: default; }
-        .search-item-poster { position: relative; width: 100px; height: 145px; flex-shrink: 0; cursor: pointer; }
-        .search-item-poster img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; background-color: #333;}
-        .search-item-info { padding-left: 15px; flex-grow: 1; }
-        .search-item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-        .search-item-title { font-size: 17px; font-weight: bold; cursor: pointer; }
-        .rating-display { display: flex; align-items: center; gap: 5px; font-size: 14px; color: #f5c518; font-weight: bold; flex-shrink: 0; margin-left: 10px; }
-        .search-item-desc { font-size: 13px; color: #ccc; line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .list-download-btn { padding: 8px 16px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-        .details-content-wrapper { padding: 20px; }
-        .details-poster-container { max-width: 200px; margin: 0 auto 20px auto; }
-        .details-poster { width: 100%; border-radius: 10px; background-color: #333;}
-        .details-info h1 { font-size: 28px; }
-        .details-info p { margin-top: 10px; color: #ccc; line-height: 1.5; }
-        .action-button-container { margin-top: 25px; }
-        .watch-btn { display: block; width: 100%; padding: 12px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 5px; font-size: 16px; font-weight: bold; text-align: center; cursor: pointer; }
-        .download-btn-container { padding: 30px 20px; text-align: center; }
-        .download-btn { display: inline-block; width: 100%; max-width: 350px; padding: 15px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .name-input { width: 100%; max-width: 350px; padding: 14px 20px; background-color: #2c2c2c; border: 1px solid #555; border-radius: 8px; color: var(--text-color); font-size: 16px; margin: 0 auto 20px auto; display: block; box-sizing: border-box; }
-        .name-input:focus { outline: none; border-color: var(--primary-red); box-shadow: 0 0 10px rgba(229, 9, 20, 0.5); }
-        .enter-btn { display: inline-block; width: 100%; max-width: 350px; padding: 14px 25px; background-color: var(--primary-red); color: var(--text-color); border: none; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        .platform-card { flex-shrink: 0; width: 150px; height: 80px; border-radius: 8px; overflow: hidden; cursor: pointer; background-color: #1a1a1a; }
+        .platform-card img { width: 100%; height: 100%; object-fit: cover; }
+
+        .update-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; padding: 0 20px; }
+        .update-card { background-color: #1a1a1a; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+        .update-card-image { width: 100%; aspect-ratio: 16 / 9; background-size: cover; background-position: center; background-color: #333; }
+        .update-card-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+        .update-card-title { font-size: 16px; font-weight: bold; margin-bottom: 10px; flex-grow: 1; }
+        .update-card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #888; }
         
-        .footer-section { padding: 40px 20px 20px 20px; border-top: 1px solid #333; margin-top: 30px; }
-        .footer-section h2, .footer-section h3 { color: #a98eff; margin-bottom: 15px; }
-        .footer-section p, .footer-section ul { color: #ccc; line-height: 1.6; margin-bottom: 25px; font-size: 15px; }
-        .footer-section ul { list-style: none; padding-left: 5px; }
-        .footer-section ul li { margin-bottom: 8px; }
-        .quick-links-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-        .quick-link-btn { background: var(--primary-red); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; color: #fff; font-weight: bold; font-size: 14px; cursor: pointer; text-decoration: none; }
-        .quick-link-btn svg { width: 20px; height: 20px; fill: #fff; }
-        .copyright { text-align: center; font-size: 12px; color: #888; line-height: 1.5; }
-        .static-page-content { padding: 20px; }
-        .static-page-content h1 { color: #a98eff; margin-bottom: 20px; }
-        .static-page-content h4 { color: #fff; margin-top: 25px; margin-bottom: 10px; font-size: 16px; }
-        .static-page-content p { color: #ccc; line-height: 1.7; margin-bottom: 15px; }
-        .static-page-content ul { list-style: none; padding-left: 5px; margin-bottom: 25px; }
-        .static-page-content li { color: #ccc; margin-bottom: 8px; }
+        #no-notifications { text-align: center; color: #888; padding: 40px 20px; }
 
+        .details-content-wrapper { padding: 20px; }
+        .details-info h1 { font-size: 28px; margin-bottom: 15px; }
+        .details-info p { color: #ccc; line-height: 1.7; }
+        
         @media (min-width: 768px) {
-            .row-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; overflow-x: hidden; }
+            .row-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; }
+            .platform-card { width: auto; height: 100px; }
             .anime-card { width: auto; }
-            #search-results-wrapper, #saved-items-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-            .search-result-item { max-width: 100%; }
-            .footer-section { max-width: 800px; margin: 30px auto 0 auto; }
+            .banner-container { max-width: 800px; margin: 30px auto; border-radius: 12px;}
         }
-
-        /* --- यहाँ से नए बटन की स्टाइलिंग शुरू है --- */
-        .quality-buttons-container {
-            padding: 30px 20px;
-        }
-        .quality-buttons-grid {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            max-width: 450px;
-            margin: 0 auto;
-        }
-        .quality-column {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            flex: 1;
-        }
-        .quality-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 10px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
-            gap: 8px;
-            transition: transform 0.2s ease;
-            border: none;
-            cursor: pointer;
-        }
-        .quality-btn:hover {
-            transform: scale(1.05);
-        }
-        .quality-btn svg {
-            width: 24px;
-            height: 24px;
-            flex-shrink: 0;
-        }
-        .color-yellow { background-color: #F8D97F; color: #333; }
-        .color-red { background-color: #f7706f; }
-        .color-cyan { background-color: #6CD2B9; }
-        .color-blue { background-color: #6CA5F2; }
-        .color-red-lightning { background-color: #f7706f; }
-        /* --- यहाँ नए बटन की स्टाइलिंग खत्म है --- */
     </style>
 </head>
 <body>
-    <div id="loader-container">
-        <div class="name-entry-box" id="name-box" style="display: none;">
-            <h2>Enter Your Name to Continue</h2>
-            <input type="text" id="initialNameInput" class="name-input" placeholder="Your Name">
-            <button class="enter-btn" onclick="submitInitialName()">Enter Anime Buzz</button>
-        </div>
-        <div id="loader-text">
-            <div class="loader-spinner"></div>
-        </div>
-    </div>
+    <div id="loader-container"><div class="loader-spinner"></div></div>
 
     <div id="app-wrapper">
         <header id="main-header">
             <div class="header-content">
-                <div class="logo-group" onclick="navigateTo('home-page')" style="cursor: pointer;">
+                <div class="logo-group" onclick="navigateTo('home-page')">
                     <div class="logo-placeholder"></div>
-                    <h1 class="website-name">Anime<span>Buzz</span></h1>
+                    <h1 class="website-name">Anime<span>Updates</span></h1>
                 </div>
-                <div class="header-right-group">
-                    <span id="home-total-count"></span>
-                    <div class="header-search-icon" onclick="navigateTo('search-page')">
-                        <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"></path></svg>
-                    </div>
+                <div class="notification-bell" onclick="showNotifications()">
+                    <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"></path></svg>
+                    <span class="notification-dot"></span>
                 </div>
             </div>
         </header>
 
-        <header id="secondary-header"><div class="header-content" id="secondary-header-content"></div></header>
         <div id="home-page" class="page active">
             <main>
-                <section id="banner-container" class="slider-container"><div id="slider-track" class="slider-track"></div></section>
-                <div id="home-rows"></div>
-                <footer class="footer-section">
-                    <h2>About Anime Buzz</h2>
-                    <p><strong>Educational Anime Platform</strong> - Your guide to anime world through images and reviews. We provide screenshots and analysis for learning purposes only.</p>
-                    <hr style="border: 1px solid #222; margin: 25px 0;">
-                    <h3>What We Offer:</h3>
-                    <ul>
-                        <li>[✅] Anime Image Galleries</li>
-                        <li>[✅] Educational Content</li>
-                        <li>[✅] Reviews & Discussions</li>
-                        <li>[❌] No Video Streaming</li>
-                    </ul>
-                    <h3>Quick Links</h3>
-                    <div class="quick-links-container">
-                        <a class="quick-link-btn" onclick="navigateTo('contact-page')">
-                            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm0 4l8 5 8-5V6l-8 5-8-5v2z"></path></svg>
-                            <span>Contact</span>
-                        </a>
-                        <a class="quick-link-btn" onclick="navigateTo('dmca-page')">
-                            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"></path></svg>
-                            <span>DMCA</span>
-                        </a>
-                        <a class="quick-link-btn" onclick="navigateTo('terms-page')">
-                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"></path></svg>
-                            <span>Terms</span>
-                        </a>
-                    </div>
-                    <p class="copyright">
-                        © 2025 Anime Buzz. | Educational Purpose Only | Credits to Original Creators
-                    </p>
-                </footer>
+                <section id="banner-container" class="banner-container"></section>
+                <section class="anime-row">
+                    <h2>Platform Watch Anime</h2>
+                    <div id="platform-row" class="row-content"></div>
+                </section>
+                <section class="anime-row">
+                    <h2>New Release</h2>
+                    <div id="new-release-row" class="row-content"></div>
+                </section>
+                <section class="anime-row">
+                    <h2>New Updates</h2>
+                    <div id="recent-updates-content" class="update-cards-grid"></div>
+                </section>
             </main>
         </div>
         
-        <div id="search-page" class="page">
-            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
-            <div class="search-bar-container">
-                <p id="total-anime-count" class="total-count-display"></p>
-                <div class="new-search-bar">
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search your favorite anime..." onkeyup="handleSearch()">
-                    <div class="search-icon-inside">
-                        <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"></path></svg>
-                    </div>
-                </div>
-            </div>
-            <div id="search-results-wrapper"></div>
-        </div>
-
-        <div id="contact-page" class="page">
-            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
-            <div class="static-page-content">
-                <h1>Contact Us</h1>
-                <p>If you have any questions or feedback, please feel free to reach out to us. We are always happy to hear from our community.</p>
-                <p>You can contact us via email at: <strong>IamAnimebuzz@gmail.com</strong></p>
-            </div>
-        </div>
-        <div id="dmca-page" class="page">
-            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
-            <div class="static-page-content">
-                <h1>DMCA Policy - Anime Buzz</h1>
-                <h4>Our Copyright Respect Mission</h4>
-                <p>At Anime Buzz, we deeply respect anime creators and copyright holders. Our platform operates with pure intentions to promote anime culture through legal educational content only. We immediately comply with all legitimate copyright concerns.</p>
-                
-                <h4>What We Use (Educational Purpose)</h4>
-                <ul>
-                    <li>· Screenshots for review and analysis</li>
-                    <li>· Promotional images with proper credit</li>
-                    <li>· Low-resolution thumbnails for educational purposes</li>
-                    <li>· Content under Fair Use for commentary and criticism</li>
-                </ul>
-
-                <h4>Reporting Copyright Infringement</h4>
-                <p>If you believe your copyrighted work has been used in a way that constitutes infringement, please provide our Copyright Agent with:</p>
-                
-                <h4>Required Information:</h4>
-                <ol style="padding-left: 20px; color: #ccc;">
-                    <li style="margin-bottom: 8px;">Your complete contact details (name, address, phone, email)</li>
-                    <li style="margin-bottom: 8px;">Identification of the copyrighted work</li>
-                    <li style="margin-bottom: 8px;">Exact URL of the content on our site</li>
-                    <li style="margin-bottom: 8px;">Statement of good faith belief that use is not authorized</li>
-                    <li style="margin-bottom: 8px;">Statement under penalty of perjury that you are authorized to act</li>
-                    <li style="margin-bottom: 8px;">Your physical or electronic signature</li>
-                </ol>
-
-                <h4>Our Prompt Action Guarantee</h4>
-                <p>We commit to:</p>
-                <ul>
-                    <li>· 24-48 hour response time to valid notices</li>
-                    <li>· Immediate removal of infringing content</li>
-                    <li>· Permanent prevention of re-uploaded content</li>
-                    <li>· Full cooperation with copyright owners</li>
-                </ul>
-
-                <h4>Counter-Notification Process</h4>
-                <p>If you believe content was removed by mistake, you may submit a counter-notification with:</p>
-                <ul>
-                    <li>· Your contact information and signature</li>
-                    <li>· Identification of removed content</li>
-                    <li>· Statement under penalty of perjury of mistaken removal</li>
-                    <li>· Consent to local jurisdiction</li>
-                </ul>
-
-                <h4>Why We Have This Policy</h4>
-                <p>We maintain this DMCA policy because:</p>
-                <ul>
-                    <li>· We respect creators' rights and hard work</li>
-                    <li>· We want to operate completely legally</li>
-                    <li>· We support the anime industry's growth</li>
-                    <li>· We believe in ethical anime promotion</li>
-                </ul>
-
-                <h4>Contact Our DMCA Agent</h4>
-                <p>Email: dmca@animebuzz.com<br>Response Time: Within 24-48 hours<br>Note: We prioritize copyright holder concerns</p>
-
-                <p><strong>Our Promise to Copyright Holders</strong></p>
-                <p>"We built Anime Buzz out of love for anime. We never intend to harm the industry we love. We will immediately resolve any legitimate copyright concerns."</p>
-                <hr style="border-color: #333; margin: 20px 0;">
-                <p><strong>Key Features of This DMCA:</strong></p>
-                <ul>
-                    <li>✅Respectful tone toward copyright holders</li>
-                    <li>✅ Clear educational purpose stated</li>
-                    <li>✅ Fast response time promised</li>
-                    <li>✅ Good intentions emphasized</li>
-                    <li>✅ Professional and compliant</li>
-                </ul>
-            </div>
-        </div>
-        <div id="terms-page" class="page">
-            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
-            <div class="static-page-content">
-                <h1>Terms and Conditions - Anime Buzz</h1>
-                
-                <h4>1. Introduction & Purpose</h4>
-                <p>Welcome to Anime Buzz! We are an educational platform dedicated to promoting anime culture through legal and ethical means. Our sole purpose is to:</p>
-                <ul>
-                    <li>· Increase awareness and popularity of anime</li>
-                    <li>· Provide educational content about anime</li>
-                    <li>· Support official anime distributors and creators</li>
-                    <li>· Build a positive community for anime enthusiasts</li>
-                </ul>
-
-                <h4>2. Our Good Faith Intentions</h4>
-                <p>We explicitly state that we have no malicious intentions. Our mission is purely to:</p>
-                <ul>
-                     <li>· Celebrate anime art and storytelling</li>
-                     <li>· Guide users toward legal streaming platforms</li>
-                     <li>· Create educational content that benefits the anime community</li>
-                     <li>· Respect copyright holders and Japanese creators</li>
-                </ul>
-
-                <h4>3. What We Provide (Legal Services)</h4>
-                <ul>
-                    <li>· Image Galleries: Screenshots and promotional images for educational purposes</li>
-                    <li>· Anime Reviews & Analysis: Original written content about anime series</li>
-                    <li>· Educational Guides: Information about anime history, genres, and culture</li>
-                    <li>· Legal Streaming Directories: Links to official platforms like Crunchyroll, Netflix</li>
-                </ul>
-
-                <h4>4. What We DON'T Provide</h4>
-                <ul>
-                    <li>· ❌ No video streaming or hosting </li>
-                    <li>· ❌ No pirated or unauthorized materials</li>
-                </ul>
-
-                <h4>5. Copyright Respect Policy</h4>
-                <p>We deeply respect intellectual property:</p>
-                <ul>
-                    <li>· All images are used under Fair Use for educational purposes</li>
-                    <li>· We provide clear credit to original creators and studios</li>
-                    <li>· We immediately remove content upon copyright owner request</li>
-                    <li>· We encourage users to support official releases</li>
-                </ul>
-
-                <h4>6. User Responsibilities</h4>
-                <p>By using our site, you agree to:</p>
-                <ul>
-                    <li>· Use our content only for educational purposes</li>
-                    <li>· Respect copyright and give proper credit</li>
-                    <li>· Not misuse our images for illegal activities</li>
-                    <li>· Support official anime distributors</li>
-                </ul>
-
-                <h4>7. DMCA Compliance</h4>
-                <p>We fully comply with DMCA regulations and have a clear takedown process for copyright holders.</p>
-
-                <h4>8. Support Official Anime</h4>
-                <p>We explicitly encourage all users to:</p>
-                <ul>
-                    <li>· Watch anime on licensed platforms</li>
-                    <li>· Purchase official merchandise</li>
-                    <li>· Support the anime industry financially</li>
-                    <li>· Respect creators' hard work</li>
-                </ul>
-                <br>
-                <p><strong>Key Features:</strong></p>
-                <ul>
-                    <li>✅Clear good faith intentions declared</li>
-                    <li>✅ Educational purpose emphasized</li>
-                    <li>✅ Support for official anime stressed</li>
-                    <li>✅ Legal boundaries clearly defined</li>
-                    <li>✅ Professional and transparent tone</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div id="details-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a><div class="details-content-wrapper"><div class="details-poster-container"><img src="" id="details-poster" class="details-poster" loading="lazy" decoding="async"></div><div class="details-info"><h1 id="details-title"></h1><p id="details-desc"></p></div><div class="action-button-container"><button id="details-watch-btn" class="watch-btn" onclick="navigateTo('episodes-page')">Watch Now</button></div></div></div>
-        <div id="episodes-page" class="page"><a href="#" class="back-btn" onclick="event.preventDefault(); navigateTo('details-page')">Back</a><div id="episodes-container"></div></div>
-        
-        <div id="update-details-page" class="page">
+        <div id="details-page" class="page">
             <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
             <div class="details-content-wrapper">
-                <h1 id="update-details-title" style="margin-bottom: 15px;"></h1>
-                <p id="update-details-desc" style="white-space: pre-wrap; line-height: 1.7;"></p>
+                <div class="details-info">
+                    <h1 id="details-title"></h1>
+                    <p id="details-desc"></p>
+                </div>
             </div>
+        </div>
+        
+        <div id="notifications-page" class="page">
+            <a href="#" class="back-btn" onclick="event.preventDefault(); navigateBack()">Back</a>
+            <div class="page-header">
+                <h2>Today's Updates</h2>
+            </div>
+            <div id="notifications-content" class="update-cards-grid"></div>
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <script>
         const firebaseConfig = {
-          apiKey: "AIzaSyASOG_iJLTolJHK54Z4BpLpAimA4JALURY",
-          authDomain: "animeweb-b9a7b.firebaseapp.com",
-          projectId: "animeweb-b9a7b",
-          storageBucket: "animeweb-b9a7b.firebasestorage.app",
-          messagingSenderId: "920902736319",
-          appId: "1:920902736319:web:b0dff9ec9e298021bf290a"
+          apiKey: "AIzaSyCs0-lmwbtJvWRVxQhQLl9gzWYpbVLoqsI",
+          authDomain: "updateanime-d18af.firebaseapp.com",
+          projectId: "updateanime-d18af",
+          storageBucket: "updateanime-d18af.firebasestorage.app",
+          messagingSenderId: "459852845583",
+          appId: "1:459852845583:web:14e8a6dfbc0d92e52d897a"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        let pageHistory = ['home-page'], savedItems = [], allData = { anime: [], animeBanners: [] }, currentItemData = null, userName = null, sliderInitialized = false;
-        let isAppReady = false;
-        let initialDataRendered = { banners: false, anime: false };
-        let fullAnimeListLoaded = false; 
+        // --- DEMO DATA (FALLBACK) ---
+        const demoBannerData = { imageUrl: 'https://files.catbox.moe/0zqd1y.jpg' };
+        const demoPlatforms = [
+            { id: 'netflix', name: 'Netflix', logoUrl: 'https://files.catbox.moe/jp0ydf.jpg', link: '#' },
+            { id: 'hotstar', name: 'JioHotstar', logoUrl: 'https://files.catbox.moe/azxkz0.jpg', link: '#' },
+            { id: 'prime', name: 'Amazon Prime', logoUrl: 'https://files.catbox.moe/iqb1mp.jpg', link: '#' },
+            { id: 'crunchyroll', name: 'Crunchyroll', logoUrl: 'https://files.catbox.moe/dyspeh.jpg', link: '#' },
+            { id: 'telegram', name: 'Telegram', logoUrl: 'https://files.catbox.moe/8vqopy.jpg', link: '#' }
+        ];
 
-        function revealApp() {
+        let pageHistory = ['home-page'];
+        let currentUpdateData = {};
+        let recentUpdates = [];
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchAllData();
             document.getElementById('loader-container').style.display = 'none';
             document.getElementById('app-wrapper').style.display = 'block';
-        }
-
-        function checkInitialRenderComplete() {
-            if (initialDataRendered.banners && initialDataRendered.anime) {
-                isAppReady = true;
-                if (userName) {
-                    revealApp();
-                } else {
-                    document.getElementById('loader-text').style.display = 'none';
-                    document.getElementById('name-box').style.display = 'block';
-                }
-            }
-        }
-
-        async function submitInitialName() {
-            const nameInput = document.getElementById('initialNameInput');
-            const enteredName = nameInput.value.trim();
-            if (enteredName !== '') {
-                userName = enteredName;
-                localStorage.setItem('animeBuzzUserName', enteredName);
-                try {
-                    await db.collection('users').add({
-                        name: enteredName,
-                        status: 'active',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                } catch (err) { console.error("Error saving user to Firestore:", err); }
-
-                if (isAppReady) {
-                    revealApp();
-                } else {
-                    document.getElementById('name-box').style.display = 'none';
-                    document.getElementById('loader-text').style.display = 'block';
-                }
-            } else { alert('Please enter your name.'); }
-        }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            userName = localStorage.getItem('animeBuzzUserName');
-            initializeApp();
-            
-            document.body.addEventListener('click', (event) => { 
-                const clickableItem = event.target.closest('.search-item-poster, .search-item-title, .anime-card, .update-card'); 
-                if (clickableItem && clickableItem.dataset.details) { 
-                    try { 
-                        const details = JSON.parse(clickableItem.dataset.details.replace(/&apos;/g, "'")); 
-                        if (details.type === 'update') {
-                            navigateTo('update-details-page', details);
-                        } else {
-                            navigateTo('details-page', details); 
-                        }
-                    } catch (e) { console.error("Failed to parse data-details JSON:", e); } 
-                } 
-            });
-            const sliderTrack = document.getElementById('slider-track');
-            if(sliderTrack) { sliderTrack.addEventListener('click', (event) => { const watchButton = event.target.closest('.watch-now-btn'); if (watchButton && watchButton.dataset.details) { try { const details = JSON.parse(watchButton.dataset.details.replace(/&apos;/g, "'")); navigateTo('details-page', details); } catch (e) { console.error("Failed to parse banner button data-details JSON:", e); } } }); }
         });
 
-        function initializeApp() {
-            try {
-                db.collection('siteConfig').doc('main').onSnapshot(doc => {
-                    if (doc.exists) {
-                        const config = doc.data();
-                        applyPrimaryColor(config.primaryColor);
-                        applyWebsiteName(config.websiteName);
-                    }
-                }, err => console.error("Error fetching site config:", err));
-                
-                db.collection('anime').orderBy("title").limit(30).get()
-                    .then(snapshot => {
-                        const initialAnime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderHomePage(initialAnime); 
-                        
-                        if (!initialDataRendered.anime) {
-                            initialDataRendered.anime = true;
-                            checkInitialRenderComplete();
-                        }
-                    })
-                    .catch(err => {
-                        console.error("Error fetching anime for home page:", err);
-                        document.getElementById("home-rows").innerHTML = `<p style="text-align:center; color:#888;">Failed to load anime.</p>`;
-                    });
+        async function fetchAllData() {
+            const promises = [
+                fetchAndRenderBanner(),
+                fetchAndRenderPlatforms(),
+                fetchAndRenderNewReleases(),
+                fetchAndRenderRecentUpdates()
+            ];
+            await Promise.all(promises);
+            checkForNewNotifications();
+        }
+        
+        function getTodayDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        function formatDate(dateString) { return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
 
-                db.collection('animeBanners').get()
-                    .then(snapshot => {
-                        allData.animeBanners = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderBanners(allData.animeBanners);
-                        if (!initialDataRendered.banners) {
-                            initialDataRendered.banners = true;
-                            checkInitialRenderComplete();
-                        }
-                    });
-                
-                fetchFullListAndCount();
-            } catch (err) {
-                console.error("Error initializing app:", err);
-                document.getElementById('loader-text').innerHTML = "<p>Failed to load data. Please refresh.</p>";
+        async function fetchAndRenderBanner() {
+            try {
+                const docSnap = await db.collection('banner').doc('mainBanner').get();
+                if (docSnap.exists) {
+                    renderStaticBanner(docSnap.data());
+                } else {
+                    renderStaticBanner(demoBannerData); // Fallback to demo
+                }
+            } catch (error) {
+                console.error("Error fetching banner, using demo data:", error);
+                renderStaticBanner(demoBannerData); // Fallback on error
             }
         }
 
-        async function fetchFullListAndCount() {
-            if (fullAnimeListLoaded) return;
-            try {
-                const snapshot = await db.collection('anime').get();
-                allData.anime = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                fullAnimeListLoaded = true;
-                
-                const totalCount = allData.anime.length;
-                const homeCountEl = document.getElementById('home-total-count');
-                const searchCountEl = document.getElementById('total-anime-count');
-                
-                if (homeCountEl) homeCountEl.innerText = `Total: ${totalCount}`;
-                if (searchCountEl) searchCountEl.innerText = `Total ${totalCount} anime available.`;
-                
-                if(document.getElementById('search-page').classList.contains('active')) {
-                    handleSearch(true);
-                }
+        function renderStaticBanner(bannerData) {
+            const bannerContainer = document.getElementById('banner-container');
+            if (!bannerContainer || !bannerData) return;
+            bannerContainer.innerHTML = `<div class="static-banner-image" style="background-image: url('${bannerData.imageUrl}');"></div>`;
+        }
 
-            } catch (err) {
-                console.error("Error fetching full anime list for count:", err);
+        async function fetchAndRenderPlatforms() {
+            try {
+                const querySnapshot = await db.collection('platforms').orderBy('order', 'asc').get();
+                if (!querySnapshot.empty) {
+                    const platforms = querySnapshot.docs.map(doc => doc.data());
+                    renderPlatforms(platforms);
+                } else {
+                    renderPlatforms(demoPlatforms); // Fallback to demo
+                }
+            } catch (error) {
+                console.error("Error fetching platforms, using demo data:", error);
+                renderPlatforms(demoPlatforms); // Fallback on error
             }
         }
         
-        async function fetchAllAnimeForSearch() {
-            if (!fullAnimeListLoaded) {
-                await fetchFullListAndCount();
+        function renderPlatforms(platforms) {
+            const platformContainer = document.getElementById('platform-row');
+            let cardsHtml = '';
+            platforms.forEach(platform => {
+                cardsHtml += `<a href="${platform.link}" target="_blank" class="platform-card"> <img loading="lazy" src="${platform.logoUrl}" alt="${platform.name}"> </a>`;
+            });
+            platformContainer.innerHTML = cardsHtml;
+        }
+
+        async function fetchAndRenderRecentUpdates() {
+            const updatesContainer = document.getElementById('recent-updates-content');
+            try {
+                const querySnapshot = await db.collection('recentUpdates').orderBy('publishDate', 'desc').get();
+                recentUpdates = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                let cardsHtml = '';
+                recentUpdates.forEach(update => {
+                    const formattedDate = formatDate(update.publishDate);
+                    const safeData = JSON.stringify(update).replace(/'/g, "&apos;");
+                    cardsHtml += `<div class="update-card"> <div class="update-card-image" style="background-image: url('${update.imageUrl}');"></div> <div class="update-card-info"> <h3 class="update-card-title">${update.title}</h3> <div class="update-card-meta"> <span>${formattedDate}</span> <a href="#" class="read-more-btn" onclick='event.preventDefault(); navigateTo("details-page", JSON.parse(this.dataset.details))' data-details='${safeData}'>Read More</a> </div> </div> </div>`;
+                });
+                updatesContainer.innerHTML = cardsHtml || '<p style="padding: 0 20px;">No updates found.</p>';
+            } catch (error) {
+                console.error("Error fetching recent updates:", error);
+                updatesContainer.innerHTML = '<p style="padding: 0 20px;">Could not load updates.</p>';
+            }
+        }
+
+        async function fetchAndRenderNewReleases() {
+            const releaseContainer = document.getElementById('new-release-row');
+            try {
+                const querySnapshot = await db.collection('newReleases').get();
+                let cardsHtml = '';
+                querySnapshot.forEach(doc => {
+                    const anime = { id: doc.id, ...doc.data() };
+                    const safeData = JSON.stringify(anime).replace(/'/g, "&apos;");
+                    cardsHtml += `<div class="anime-card" onclick='navigateTo("details-page", JSON.parse(this.dataset.details))' data-details='${safeData}'> <img loading="lazy" src="${anime.imageUrl}" alt="${anime.title}"> <div class="card-title-box"> <p>${anime.title}</p> </div> </div>`;
+                });
+                releaseContainer.innerHTML = cardsHtml || '<p style="padding: 0 20px;">No new releases found.</p>';
+            } catch (error) {
+                console.error("Error fetching new releases:", error);
+                releaseContainer.innerHTML = '<p style="padding: 0 20px;">Could not load releases.</p>';
+            }
+        }
+
+        function checkForNewNotifications() {
+            if (recentUpdates.length === 0) return;
+            const latestUpdate = recentUpdates[0]; // Already sorted by date
+            const lastSeenUpdateDate = localStorage.getItem('lastSeenUpdateDate');
+            if (!lastSeenUpdateDate || new Date(latestUpdate.publishDate) > new Date(lastSeenUpdateDate)) {
+                 document.querySelector('.notification-bell').classList.add('has-new');
+            }
+        }
+        
+        function showNotifications() {
+            document.querySelector('.notification-bell').classList.remove('has-new');
+            if (recentUpdates.length > 0) {
+                 const latestUpdate = recentUpdates[0];
+                 localStorage.setItem('lastSeenUpdateDate', latestUpdate.publishDate);
+            }
+            navigateTo('notifications-page');
+        }
+
+        function renderNotificationsPage() {
+            const notificationsContainer = document.getElementById('notifications-content');
+            const todayString = getTodayDateString();
+            const todaysUpdates = recentUpdates.filter(update => update.publishDate === todayString);
+            if (todaysUpdates.length > 0) {
+                let cardsHtml = '';
+                todaysUpdates.forEach(update => {
+                    const formattedDate = formatDate(update.publishDate);
+                    const safeData = JSON.stringify(update).replace(/'/g, "&apos;");
+                    cardsHtml += `<div class="update-card"> <div class="update-card-image" style="background-image: url('${update.imageUrl}');"></div> <div class="update-card-info"> <h3 class="update-card-title">${update.title}</h3> <div class="update-card-meta"> <span>${formattedDate}</span> <a href="#" class="read-more-btn" onclick='event.preventDefault(); navigateTo("details-page", JSON.parse(this.dataset.details))' data-details='${safeData}'>Read More</a> </div> </div> </div>`;
+                });
+                notificationsContainer.innerHTML = cardsHtml;
+            } else {
+                notificationsContainer.innerHTML = `<p id="no-notifications">No new updates for today.</p>`;
             }
         }
         
         function navigateTo(pageId, data = null) {
-            if (pageHistory[pageHistory.length - 1] !== pageId || data) {
-                 if (pageHistory[pageHistory.length - 1] !== pageId) pageHistory.push(pageId);
-            }
+            if (pageHistory[pageHistory.length - 1] !== pageId) pageHistory.push(pageId);
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId)?.classList.add('active');
-
-            if ((pageId === 'details-page' || pageId === 'update-details-page') && data) {
-                currentItemData = data;
+            document.getElementById(pageId).classList.add('active');
+            if (pageId === 'details-page' && data) {
+                currentUpdateData = data; renderDetailsPage();
+            } else if (pageId === 'notifications-page') {
+                renderNotificationsPage();
             }
-
-            if (pageId === 'details-page' && currentItemData) {
-                document.getElementById('details-poster').src = currentItemData.imageUrl;
-                document.getElementById('details-title').innerText = currentItemData.title;
-                document.getElementById('details-desc').innerText = currentItemData.description || 'No description available.';
-                document.getElementById('details-watch-btn').innerText = currentItemData.buttonText || 'Watch Now';
-            }
-            if (pageId === 'update-details-page' && currentItemData) {
-                document.getElementById('update-details-title').innerText = currentItemData.title || 'Update Details';
-                document.getElementById('update-details-desc').innerText = currentItemData.description || 'No description available.';
-            }
-
-            if (pageId === 'episodes-page') renderDownloadPage();
-            if (pageId === 'saved-page') renderSavedItems();
-
-            if (pageId === 'search-page') {
-                document.getElementById('searchInput').value = ''; 
-                fetchAllAnimeForSearch().then(() => {
-                    handleSearch(true);
-                });
-            }
-            updateHeader(pageId);
             window.scrollTo(0, 0);
         }
-        
-        function createSearchResultItem(item) { const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;'); const ratingHtml = item.rating ? `<div class="rating-display">⭐ ${item.rating}</div>` : ''; const episodeLink = item.episodeLink ? item.episodeLink.replace(/'/g, "\\'") : ''; const downloadBtnHtml = item.episodeLink ? `<button class="list-download-btn" onclick="openExternalLink('${episodeLink}')">Download</button>` : ''; return ` <div class="search-result-item" data-details='${safeDetails}'> <div class="search-item-poster" data-details='${safeDetails}'> <img loading="lazy" decoding="async" width="100" height="145" src="${item.imageUrl}" alt="${item.title}"> ${item.language ? `<span class="language-tag">${item.language}</span>` : ''} </div> <div class="search-item-info"> <div class="search-item-header"> <div class="search-item-title" data-details='${safeDetails}'>${item.title}</div> ${ratingHtml} </div> <div class="search-item-desc">${item.description || 'No description available.'}</div> ${downloadBtnHtml} </div> </div>`; }
 
-        function updateHeader(pageId) {
-            const pageHeaders = { "details-page": "Details", "episodes-page": "Episodes", "update-details-page": "Update", "contact-page": "Contact Us", "dmca-page": "DMCA Policy", "terms-page": "Terms of Service" };
-            const title = pageHeaders[pageId];
-            const mainHeader = document.getElementById("main-header");
-            const secondaryHeader = document.getElementById("secondary-header");
-            const headerContentEl = document.getElementById("secondary-header-content");
-            
-            if (title) {
-                mainHeader.style.display = "none";
-                secondaryHeader.style.display = "block";
-                let headerContent = '';
-                if (pageId === "details-page" && currentItemData) {
-                    headerContent = `<h1 class="website-name">${title}</h1>`;
-                    if (currentItemData.type === 'anime') {
-                        const safeTitle = currentItemData.title ? currentItemData.title.replace(/'/g, "\\'") : '';
-                        let iconsHtml = `<svg class="save-icon ${savedItems.some(i => i.id === currentItemData.id) ? "saved" : ""}" onclick="toggleSave(this, '${currentItemData.id}', '${safeTitle}', '${currentItemData.imageUrl}')" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-                        headerContent += `<div class="details-header-icons">${iconsHtml}</div>`;
-                    }
-                } else {
-                     headerContent = `<h1 class="website-name">${title}</h1>`;
-                }
-                headerContentEl.innerHTML = headerContent;
-            } else {
-                mainHeader.style.display = "block";
-                secondaryHeader.style.display = "none";
+        function navigateBack() {
+            if (pageHistory.length > 1) {
+                pageHistory.pop();
+                const prevPage = pageHistory[pageHistory.length - 1] || 'home-page';
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById(prevPage).classList.add('active');
             }
         }
         
-        function createAnimeCard(item) { 
-            const langTag = item.language ? `<span class="language-tag">${item.language}</span>` : ''; 
-            const safeDetails = JSON.stringify({...item, type: 'anime'}).replace(/'/g, '&apos;');  
-            return `<div class="anime-card" data-details='${safeDetails}'>
-                        <div class="anime-card-poster">
-                            <img loading="lazy" decoding="async" src="${item.imageUrl}" alt="${item.title}"> 
-                            ${langTag}
-                        </div>
-                        <div class="card-title-box">
-                            <p>${item.title}</p>
-                        </div>
-                    </div>`; 
+        function renderDetailsPage() {
+            document.getElementById('details-title').innerText = currentUpdateData.title;
+            document.getElementById('details-desc').innerText = currentUpdateData.fullDescription;
         }
-
-        function applyPrimaryColor(color) { if (color) { document.documentElement.style.setProperty('--primary-red', color); } }
-        function applyWebsiteName(name) { if (name) { const nameElement = document.querySelector('#main-header .website-name'); if (nameElement) { nameElement.innerHTML = `${name}<span>Buzz</span>`; } } }
-        function renderBanners(banners) { const track = document.getElementById('slider-track'); if (!track) return; if (banners.length === 0) { track.innerHTML = ""; return; } track.innerHTML = banners.map(banner => { const bannerData = { ...banner, type: 'banner', id: banner.id || banner.title.replace(/\s+/g, '-') }; const styleAttribute = banner.imageUrl ? `style="background-image: url('${banner.imageUrl}');"` : ''; const safeDetails = JSON.stringify(bannerData).replace(/'/g, '&apos;'); return `<div class="hero-slide" ${styleAttribute}><h3 class="hero-title">${banner.title}</h3><button class="watch-now-btn" data-details='${safeDetails}'><span>${banner.buttonText || 'Watch Now'}</span><span>&gt;</span></button></div>`; }).join(''); if (!sliderInitialized) { initSlider(); sliderInitialized = true; } }
-        
-        function renderHomePage(animeList) {
-            const container = document.getElementById("home-rows");
-            if (!container) return;
-            
-            if (!animeList || animeList.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:#888;">No anime found.</p>`;
-                return;
-            }
-
-            const categories = [
-                { title: "Popular", items: animeList.slice(0, 10) },
-                { title: "Trending", items: animeList.slice(10, 20) },
-                { title: "Peak time", items: animeList.slice(20, 30) }
-            ];
-
-            let finalHtml = '';
-            for (const category of categories) {
-                if (category.items.length > 0) {
-                    finalHtml += `<section class="anime-row"><h2>${category.title}</h2><div class="row-content">${category.items.map(createAnimeCard).join('')}</div></section>`;
-                }
-            }
-
-            container.innerHTML = finalHtml;
-        }
-        
-        function handleSearch(showAll = false) { 
-            const term = document.getElementById("searchInput").value.toLowerCase(); 
-            const resultsWrapper = document.getElementById("search-results-wrapper"); 
-            const countElement = document.getElementById('total-anime-count');
-            const listToSearch = allData.anime; 
-            const totalCount = listToSearch.length;
-            
-            if (showAll && !term) { 
-                resultsWrapper.innerHTML = listToSearch.map(createSearchResultItem).join(''); 
-                if (countElement) countElement.innerText = `Total ${totalCount} anime available.`;
-                return; 
-            } 
-            
-            const filtered = listToSearch.filter(e => e.title.toLowerCase().includes(term)); 
-            
-            if (filtered.length) {
-                resultsWrapper.innerHTML = filtered.map(createSearchResultItem).join('');
-                if (countElement) countElement.innerText = `Showing ${filtered.length} of ${totalCount} anime.`;
-            } else {
-                resultsWrapper.innerHTML = `<div id="no-results"><p>No results found</p></div>`; 
-                if (countElement) countElement.innerText = `Found 0 of ${totalCount} anime.`;
-            }
-        }
-
-        // --- यह FUNCTION आपकी आवश्यकता के अनुसार बदल दिया गया है ---
-        function renderDownloadPage() {
-            const container = document.getElementById("episodes-container");
-            
-            // वर्तमान एनीमे के डेटा से टेलीग्राम लिंक प्राप्त करें
-            const telegramChannelUrl = currentItemData ? currentItemData.episodeLink : null;
-
-            // जांचें कि लिंक उपलब्ध है या नहीं
-            if (telegramChannelUrl && telegramChannelUrl.trim() !== '' && telegramChannelUrl.trim() !== '#') {
-                const downloadPageHTML = `
-                <div class="quality-buttons-container">
-                    <div class="quality-buttons-grid">
-                        <div class="quality-column">
-                            <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-yellow">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><rect x="5" y="15" width="14" height="5" rx="1" fill="#DCDCDC"/><path d="M12 14L9 10H11V3H13V10H15L12 14Z" fill="#4CAF50"/></g></svg>
-                                <span>HDRiP</span>
-                            </a>
-                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><rect x="5" y="15" width="14" height="5" rx="1" fill="#DCDCDC"/><path d="M12 14L9 10H11V3H13V10H15L12 14Z" fill="#4CAF50"/></g></svg>
-                                <span>1080p</span>
-                            </a>
-                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-cyan">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><rect x="5" y="15" width="14" height="5" rx="1" fill="#DCDCDC"/><path d="M12 14L9 10H11V3H13V10H15L12 14Z" fill="#4CAF50"/></g></svg>
-                                <span>720p</span>
-                            </a>
-                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-blue">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><rect x="5" y="15" width="14" height="5" rx="1" fill="#DCDCDC"/><path d="M12 14L9 10H11V3H13V10H15L12 14Z" fill="#4CAF50"/></g></svg>
-                                <span>480p</span>
-                            </a>
-                        </div>
-                        <div class="quality-column">
-                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red-lightning">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.8889 2L4 13.7778H12L10.8889 22L19.1111 9.11111H12L10.8889 2Z" fill="#FFC107"/></svg>
-                                <span>HDRiP</span>
-                            </a>
-                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red-lightning">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.8889 2L4 13.7778H12L10.8889 22L19.1111 9.11111H12L10.8889 2Z" fill="#FFC107"/></svg>
-                                <span>1080p</span>
-                            </a>
-                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red-lightning">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.8889 2L4 13.7778H12L10.8889 22L19.1111 9.11111H12L10.8889 2Z" fill="#FFC107"/></svg>
-                                <span>720p</span>
-                            </a>
-                             <a href="${telegramChannelUrl}" target="_blank" class="quality-btn color-red-lightning">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.8889 2L4 13.7778H12L10.8889 22L19.1111 9.11111H12L10.8889 2Z" fill="#FFC107"/></svg>
-                                <span>480p</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                `;
-                container.innerHTML = downloadPageHTML;
-            } else {
-                // यदि कोई लिंक उपलब्ध नहीं है, तो यह संदेश दिखाएं।
-                container.innerHTML = '<p style="text-align: center; padding: 40px;">Download link not available.</p>';
-            }
-        }
-        
-        function navigateBack() { if (pageHistory.length > 1) { pageHistory.pop(); navigateTo(pageHistory[pageHistory.length - 1]); } }
-        function toggleSave(icon, id, title, imageUrl) { const isSaved = icon.classList.toggle("saved"); if (isSaved) { if (!savedItems.some(i => i.id === id)) savedItems.push({ id, title, imageUrl }); } else { savedItems = savedItems.filter(i => i.id !== id); } localStorage.setItem("animeBuzzSaved", JSON.stringify(savedItems)); }
-        function renderSavedItems() { const listContainer = document.getElementById("saved-items-list"); if (savedItems.length > 0) { const fullItems = savedItems.map(item => allData.anime.find(a => a.id === item.id) || item); listContainer.innerHTML = fullItems.map(createSearchResultItem).join(''); } else { listContainer.innerHTML = `<div id="no-results"><p>Nothing saved yet.</p></div>`; } }
-        function openExternalLink(url) { if (url && url.trim() !== '' && url.trim() !== '#') { let fullUrl = url.trim(); if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) { fullUrl = 'https://' + fullUrl; } window.open(fullUrl, '_blank'); } else { alert("Link is not available."); } }
-        function initSlider() { const container = document.getElementById('banner-container'); const track = document.getElementById('slider-track'); if (!container || !track) return; let slides = Array.from(track.children); if (slides.length <= 1) return; const slideCount = slides.length; const transitionTime = 400; const autoSlideInterval = 3000; track.style.setProperty('--transition-time', `${transitionTime}ms`); const firstClone = slides[0].cloneNode(true); firstClone.classList.add('clone'); const lastClone = slides[slideCount - 1].cloneNode(true); lastClone.classList.add('clone'); track.appendChild(firstClone); track.insertBefore(lastClone, slides[0]); let currentIndex = 1; let isDragging = false; let startPos = 0; let currentTranslate = 0; let prevTranslate = 0; let autoSlideTimer; function getPositionX(event) { return event.touches ? event.touches[0].clientX : event.pageX; } function setPositionByIndex() { currentTranslate = currentIndex * -container.offsetWidth; track.style.transform = `translateX(${currentTranslate}px)`; } function shiftSlides() { if (currentIndex <= 0) { track.style.transition = 'none'; currentIndex = slideCount; setPositionByIndex(); } else if (currentIndex >= slideCount + 1) { track.style.transition = 'none'; currentIndex = 1; setPositionByIndex(); } setTimeout(() => { track.style.transition = `transform ${transitionTime}ms ease-out`; }, 50); } function startAutoSlide() { clearInterval(autoSlideTimer); autoSlideTimer = setInterval(() => { currentIndex++; setPositionByIndex(); if (currentIndex >= slideCount + 1) { setTimeout(shiftSlides, transitionTime); } }, autoSlideInterval); } function dragStart(event) { clearInterval(autoSlideTimer); isDragging = true; startPos = getPositionX(event); prevTranslate = currentTranslate; track.style.transition = 'none'; } function dragMove(event) { if (isDragging) { const currentPosition = getPositionX(event); currentTranslate = prevTranslate + currentPosition - startPos; track.style.transform = `translateX(${currentTranslate}px)`; } } function dragEnd() { if (!isDragging) return; isDragging = false; const movedBy = currentTranslate - prevTranslate; if (movedBy < -100) currentIndex++; else if (movedBy > 100) currentIndex--; track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); shiftSlides(); startAutoSlide(); } container.addEventListener('mousedown', dragStart); container.addEventListener('touchstart', dragStart, { passive: true }); container.addEventListener('mouseup', dragEnd); container.addEventListener('touchend', dragEnd); container.addEventListener('mouseleave', dragEnd); container.addEventListener('mousemove', dragMove); container.addEventListener('touchmove', dragMove, { passive: true }); window.addEventListener('resize', setPositionByIndex); track.style.transition = `transform ${transitionTime}ms ease-out`; setPositionByIndex(); startAutoSlide(); }
     </script>
 </body>
-    </html>
+     </html>
